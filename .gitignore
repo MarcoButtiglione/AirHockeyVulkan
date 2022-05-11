@@ -1,2 +1,6 @@
 .vs
 x64/
+vulkan-cg-project.sln
+vulkan-cg-project.vcxproj
+vulkan-cg-project.vcxproj.filters
+vulkan-cg-project.vcxproj.user
