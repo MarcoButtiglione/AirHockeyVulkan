@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+//chi legge nota un cambiamento
+
 int main() {
     glfwInit();
 
