@@ -1,1 +1,2 @@
 C:\Users\marco\Documents\GitHub\vulkan-cg-project\x64\Debug\vulkan-cg-project.exe
+C:\Users\crusc\Desktop\PoliMi\ComputerGraphics\Progetto\x64\Debug\vulkan-cg-project.exe
