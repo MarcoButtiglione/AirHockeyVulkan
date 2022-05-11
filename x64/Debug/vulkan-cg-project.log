@@ -1,5 +1,1 @@
-﻿  glm.cpp
-  main.cpp
-  Generazione del codice in corso...
-LINK : warning LNK4098: la libreria predefinita 'MSVCRT' è in conflitto con l'utilizzo di altre librerie; usare /NODEFAULTLIB:libreria
-  vulkan-cg-project.vcxproj -> C:\Users\crusc\Desktop\PoliMi\ComputerGraphics\Progetto\x64\Debug\vulkan-cg-project.exe
+﻿  vulkan-cg-project.vcxproj -> C:\Users\marco\Documents\GitHub\vulkan-cg-project\x64\Debug\vulkan-cg-project.exe
