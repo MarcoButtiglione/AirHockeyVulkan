@@ -25,22 +25,26 @@ class MyProject : public BaseProject {
 	Pipeline P1;
 
 	// Models, textures and Descriptors (values assigned to the uniforms)
-	Model M1;
-	Texture T1;
-	DescriptorSet DS1;
+	Model Table;
+	Texture Table_Text;
+	DescriptorSet DSTable;
+
+	Model M_Disk;
+	Texture T_Disk;
+	DescriptorSet DS_Disk;
 	
 	// Here you set the main application parameters
 	void setWindowParameters() {
 		// window size, titile and initial background
-		windowWidth = 800;
-		windowHeight = 600;
+		windowWidth = 1280;
+		windowHeight = 720;
 		windowTitle = "My Project";
-		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
+		initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
 		
 		// Descriptor pool sizes
-		uniformBlocksInPool = 1;
-		texturesInPool = 1;
-		setsInPool = 1;
+		uniformBlocksInPool = 2;
+		texturesInPool = 2;
+		setsInPool = 2;
 	}
 	
 	// Here you load and setup all your Vulkan objects
@@ -61,9 +65,9 @@ class MyProject : public BaseProject {
 		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSL1});
 
 		// Models, textures and Descriptors (values assigned to the uniforms)
-		M1.init(this, MODEL_PATH);
-		T1.init(this, TEXTURE_PATH);
-		DS1.init(this, &DSL1, {
+		Table.init(this, "models/table.obj");
+		Table_Text.init(this, "textures/airhockey-background.png");
+		DSTable.init(this, &DSL1, {
 		// the second parameter, is a pointer to the Uniform Set Layout of this set
 		// the last parameter is an array, with one element per binding of the set.
 		// first  elmenet : the binding number
@@ -71,15 +75,29 @@ class MyProject : public BaseProject {
 		// third  element : only for UNIFORMs, the size of the corresponding C++ object
 		// fourth element : only for TEXTUREs, the pointer to the corresponding texture object
 					{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
-					{1, TEXTURE, 0, &T1}
+					{1, TEXTURE, 0, &Table_Text}
 				});
+
+		//Disk initialization
+
+		M_Disk.init(this, "models/disk.obj");
+		T_Disk.init(this, "textures/disk.png");
+		DS_Disk.init(this, &DSL1, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Disk}
+			});
+
+
 	}
 
 	// Here you destroy all the objects you created!		
 	void localCleanup() {
-		DS1.cleanup();
-		T1.cleanup();
-		M1.cleanup();
+		DSTable.cleanup();
+		Table_Text.cleanup();
+		Table.cleanup();
+		DS_Disk.cleanup();
+		M_Disk.cleanup();
+		T_Disk.cleanup();
 		P1.cleanup();
 		DSL1.cleanup();
 	}
@@ -92,24 +110,39 @@ class MyProject : public BaseProject {
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 				P1.graphicsPipeline);
 				
-		VkBuffer vertexBuffers[] = {M1.vertexBuffer};
+		VkBuffer vertexBuffers[] = {Table.vertexBuffer};
 		// property .vertexBuffer of models, contains the VkBuffer handle to its vertex buffer
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		// property .indexBuffer of models, contains the VkBuffer handle to its index buffer
-		vkCmdBindIndexBuffer(commandBuffer, M1.indexBuffer, 0,
+		vkCmdBindIndexBuffer(commandBuffer, Table.indexBuffer, 0,
 								VK_INDEX_TYPE_UINT32);
 
 		// property .pipelineLayout of a pipeline contains its layout.
 		// property .descriptorSets of a descriptor set contains its elements.
 		vkCmdBindDescriptorSets(commandBuffer,
 						VK_PIPELINE_BIND_POINT_GRAPHICS,
-						P1.pipelineLayout, 0, 1, &DS1.descriptorSets[currentImage],
+						P1.pipelineLayout, 0, 1, &DSTable.descriptorSets[currentImage],
 						0, nullptr);
 						
 		// property .indices.size() of models, contains the number of triangles * 3 of the mesh.
 		vkCmdDrawIndexed(commandBuffer,
-					static_cast<uint32_t>(M1.indices.size()), 1, 0, 0, 0);
+					static_cast<uint32_t>(Table.indices.size()), 1, 0, 0, 0);
+
+		//Disk buffer initialization
+
+		VkBuffer vertexBuffers_Disk[] = { M_Disk.vertexBuffer };
+		VkDeviceSize offsets_Disk[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Disk, offsets_Disk);
+		vkCmdBindIndexBuffer(commandBuffer, M_Disk.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 0, 1, &DS_Disk.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Disk.indices.size()), 1, 0, 0, 0);
+
 	}
 
 	// Here is where you update the uniforms.
@@ -122,12 +155,21 @@ class MyProject : public BaseProject {
 					
 					
 		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f),
-								time * glm::radians(90.0f),
-								glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f),
-							   glm::vec3(0.0f, 0.0f, 0.0f),
-							   glm::vec3(0.0f, 0.0f, 1.0f));
+		
+		//View of the field
+		/*ubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f)); */
+		
+		//View of a player
+		/*ubo.view = glm::lookAt(glm::vec3(1.5f, 0.5f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f)); */
+
+		ubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));
+
 		ubo.proj = glm::perspective(glm::radians(45.0f),
 						swapChainExtent.width / (float) swapChainExtent.height,
 						0.1f, 10.0f);
@@ -135,11 +177,29 @@ class MyProject : public BaseProject {
 		
 		void* data;
 
+		//For the table
+		ubo.model = glm::mat4(1.0f);
+		
+		//Previous table rotaded
+		/*ubo.model = glm::rotate(glm::mat4(1.0f),
+			glm::radians(45.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));*/
+
 		// Here is where you actually update your uniforms
-		vkMapMemory(device, DS1.uniformBuffersMemory[0][currentImage], 0,
+		vkMapMemory(device, DSTable.uniformBuffersMemory[0][currentImage], 0,
 							sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DS1.uniformBuffersMemory[0][currentImage]);
+		vkUnmapMemory(device, DSTable.uniformBuffersMemory[0][currentImage]);
+
+
+		//For the disk
+		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(-0.75f,0.0f,0.41f));
+
+		// Here is where you actually update your uniforms
+		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
 	}	
 };
 
