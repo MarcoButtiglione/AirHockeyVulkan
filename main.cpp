@@ -3,7 +3,7 @@
 #include "MyProject.hpp"
 
 const std::string MODEL_PATH = "models/table.obj";
-const std::string TEXTURE_PATH = "textures/viking_room.png";
+const std::string TEXTURE_PATH = "textures/airhockey-background.png";
 
 // The uniform buffer object used in this example
 struct UniformBufferObject {
