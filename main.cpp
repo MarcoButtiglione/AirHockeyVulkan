@@ -2,16 +2,15 @@
 
 #include "MyProject.hpp"
 
-const std::string MODEL_PATH = "models/table.obj";
-const std::string TEXTURE_PATH = "textures/airhockey-background.png";
 
 // The uniform buffer object used in this example
-struct UniformBufferObject {
-	alignas(16) glm::mat4 model;
+struct globalUniformBufferObject {
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
 };
-
+struct UniformBufferObject {
+	alignas(16) glm::mat4 model;
+};
 
 // MAIN ! 
 class MyProject : public BaseProject {
@@ -19,7 +18,8 @@ class MyProject : public BaseProject {
 	// Here you list all the Vulkan objects you need:
 	
 	// Descriptor Layouts [what will be passed to the shaders]
-	DescriptorSetLayout DSL1;
+	DescriptorSetLayout DSLglobal;
+	DescriptorSetLayout DSLobj;
 
 	// Pipelines [Shader couples]
 	Pipeline P1;
@@ -27,11 +27,14 @@ class MyProject : public BaseProject {
 	// Models, textures and Descriptors (values assigned to the uniforms)
 	Model Table;
 	Texture Table_Text;
-	DescriptorSet DSTable;
+	DescriptorSet DSTable;	//instance of DSLobj
 
 	Model M_Disk;
 	Texture T_Disk;
-	DescriptorSet DS_Disk;
+	DescriptorSet DS_Disk;	//instance of DSLobj
+	
+	// Instance DS global
+	DescriptorSet DS_global;	//instance of DSLglobal
 	
 	// Here you set the main application parameters
 	void setWindowParameters() {
@@ -42,15 +45,15 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
 		
 		// Descriptor pool sizes
-		uniformBlocksInPool = 2;
+		uniformBlocksInPool = 3;
 		texturesInPool = 2;
-		setsInPool = 2;
+		setsInPool = 3;
 	}
 	
 	// Here you load and setup all your Vulkan objects
 	void localInit() {
 		// Descriptor Layouts [what will be passed to the shaders]
-		DSL1.init(this, {
+		DSLobj.init(this, {
 					// this array contains the binding:
 					// first  element : the binding number
 					// second element : the time of element (buffer or texture)
@@ -58,16 +61,20 @@ class MyProject : public BaseProject {
 					{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
 					{1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 				  });
+		DSLglobal.init(this, {
+			{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,VK_SHADER_STAGE_ALL_GRAPHICS},
+			});
+
 
 		// Pipelines [Shader couples]
 		// The last array, is a vector of pointer to the layouts of the sets that will
 		// be used in this pipeline. The first element will be set 0, and so on..
-		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSL1});
+		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSLglobal, &DSLobj});
 
 		// Models, textures and Descriptors (values assigned to the uniforms)
 		Table.init(this, "models/table.obj");
 		Table_Text.init(this, "textures/airhockey-background.png");
-		DSTable.init(this, &DSL1, {
+		DSTable.init(this, &DSLobj, {
 		// the second parameter, is a pointer to the Uniform Set Layout of this set
 		// the last parameter is an array, with one element per binding of the set.
 		// first  elmenet : the binding number
@@ -82,9 +89,14 @@ class MyProject : public BaseProject {
 
 		M_Disk.init(this, "models/disk.obj");
 		T_Disk.init(this, "textures/disk.png");
-		DS_Disk.init(this, &DSL1, {
+		DS_Disk.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Disk}
+			});
+
+		//DS initialization
+		DS_global.init(this, &DSLglobal, {
+						{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr},
 			});
 
 
@@ -99,7 +111,10 @@ class MyProject : public BaseProject {
 		M_Disk.cleanup();
 		T_Disk.cleanup();
 		P1.cleanup();
-		DSL1.cleanup();
+		DS_global.cleanup();
+
+		DSLglobal.cleanup();
+		DSLobj.cleanup();
 	}
 	
 	// Here it is the creation of the command buffer:
@@ -109,6 +124,11 @@ class MyProject : public BaseProject {
 				
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 				P1.graphicsPipeline);
+
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 0, 1, &DS_global.descriptorSets[currentImage],
+			0, nullptr);
 				
 		VkBuffer vertexBuffers[] = {Table.vertexBuffer};
 		// property .vertexBuffer of models, contains the VkBuffer handle to its vertex buffer
@@ -122,7 +142,7 @@ class MyProject : public BaseProject {
 		// property .descriptorSets of a descriptor set contains its elements.
 		vkCmdBindDescriptorSets(commandBuffer,
 						VK_PIPELINE_BIND_POINT_GRAPHICS,
-						P1.pipelineLayout, 0, 1, &DSTable.descriptorSets[currentImage],
+						P1.pipelineLayout, 1, 1, &DSTable.descriptorSets[currentImage],
 						0, nullptr);
 						
 		// property .indices.size() of models, contains the number of triangles * 3 of the mesh.
@@ -138,7 +158,7 @@ class MyProject : public BaseProject {
 			VK_INDEX_TYPE_UINT32);
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			P1.pipelineLayout, 0, 1, &DS_Disk.descriptorSets[currentImage],
+			P1.pipelineLayout, 1, 1, &DS_Disk.descriptorSets[currentImage],
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Disk.indices.size()), 1, 0, 0, 0);
@@ -155,6 +175,7 @@ class MyProject : public BaseProject {
 					
 					
 		UniformBufferObject ubo{};
+		globalUniformBufferObject gubo{};
 		
 		//View of the field
 		/*ubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
@@ -166,16 +187,23 @@ class MyProject : public BaseProject {
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f)); */
 
-		ubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
+
+		void* data;
+		gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f));
 
-		ubo.proj = glm::perspective(glm::radians(45.0f),
+		gubo.proj = glm::perspective(glm::radians(45.0f),
 						swapChainExtent.width / (float) swapChainExtent.height,
 						0.1f, 10.0f);
-		ubo.proj[1][1] *= -1;
+		gubo.proj[1][1] *= -1;
 		
-		void* data;
+
+		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(gubo), 0, &data);
+		memcpy(data, &gubo, sizeof(gubo));
+		vkUnmapMemory(device, DS_global.uniformBuffersMemory[0][currentImage]);
+		
 
 		//For the table
 		ubo.model = glm::mat4(1.0f);
@@ -193,7 +221,7 @@ class MyProject : public BaseProject {
 
 
 		//For the disk
-		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(-0.75f,0.0f,0.41f));
+		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,0.0f,0.0f));
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
