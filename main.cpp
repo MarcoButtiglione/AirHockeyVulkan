@@ -42,12 +42,16 @@ class MyProject : public BaseProject {
 	
 	// Instance DS global
 	DescriptorSet DS_global;	//instance of DSLglobal
+
+	globalUniformBufferObject gubo{};
+	int view;
+
 	
 	// Here you set the main application parameters
 	void setWindowParameters() {
 		// window size, titile and initial background
-		windowWidth = 1280;
-		windowHeight = 720;
+		windowWidth = 1920;
+		windowHeight = 1080;
 		windowTitle = "My Project";
 		initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
 		
@@ -55,6 +59,7 @@ class MyProject : public BaseProject {
 		uniformBlocksInPool = 5;
 		texturesInPool = 4;
 		setsInPool = 5;
+
 	}
 	
 	// Here you load and setup all your Vulkan objects
@@ -101,7 +106,7 @@ class MyProject : public BaseProject {
 						{1, TEXTURE, 0, &T_Disk}
 			});
 
-		M_Paddle.init(this, "models/disk.obj");
+		M_Paddle.init(this, "models/paddle.obj");
 		T_Paddle1.init(this, "textures/paddle1.png");
 		DS_Paddle1.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
@@ -119,7 +124,14 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr},
 			});
 
-
+		gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));
+		view = 0;
+		gubo.proj = glm::perspective(glm::radians(45.0f),
+			swapChainExtent.width / (float)swapChainExtent.height,
+			0.1f, 10.0f);
+		gubo.proj[1][1] *= -1;
 	}
 
 	// Here you destroy all the objects you created!		
@@ -216,38 +228,58 @@ class MyProject : public BaseProject {
 
 	}
 
+
 	// Here is where you update the uniforms.
 	// Very likely this will be where you will be writing the logic of your application.
 	void updateUniformBuffer(uint32_t currentImage) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
+		static float lastTime = 0.0f;
+
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>
-					(currentTime - startTime).count();
-					
+			(currentTime - startTime).count();
+		float deltaT = time - lastTime;
+		lastTime = time;
+
+		static float debounce = time;
+
 					
 		UniformBufferObject ubo{};
-		globalUniformBufferObject gubo{};
 		
-		//View of the field
-		/*ubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)); */
-		
-		//View of a player
-		/*ubo.view = glm::lookAt(glm::vec3(1.5f, 0.5f, 0.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)); */
-
-
+			
 		void* data;
-		gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
+		
+	
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				view++;
+				debounce = time;
+				view = view % 3;
+			}
+		}
+		if (view == 0) {
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f));
+			
+		}
+		else if (view == 1)
+		{
+			gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));		
+		}
+		else if (view == 2)
+		{
+			gubo.view = glm::lookAt(glm::vec3(1.5f, 0.5f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+			
 
-		gubo.proj = glm::perspective(glm::radians(45.0f),
-						swapChainExtent.width / (float) swapChainExtent.height,
-						0.1f, 10.0f);
-		gubo.proj[1][1] *= -1;
+		
+		
+		
 		
 
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
