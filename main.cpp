@@ -25,13 +25,20 @@ class MyProject : public BaseProject {
 	Pipeline P1;
 
 	// Models, textures and Descriptors (values assigned to the uniforms)
-	Model Table;
-	Texture Table_Text;
-	DescriptorSet DSTable;	//instance of DSLobj
+	Model M_Table;
+	Texture T_Table;
+	DescriptorSet DS_Table;	//instances of DSLobj
 
 	Model M_Disk;
 	Texture T_Disk;
-	DescriptorSet DS_Disk;	//instance of DSLobj
+	DescriptorSet DS_Disk;	
+
+	Model M_Paddle;
+	Texture T_Paddle1;
+	DescriptorSet DS_Paddle1;	//First instance of the paddle
+
+	Texture T_Paddle2;
+	DescriptorSet DS_Paddle2;   //Second instance of the paddle
 	
 	// Instance DS global
 	DescriptorSet DS_global;	//instance of DSLglobal
@@ -45,9 +52,9 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
 		
 		// Descriptor pool sizes
-		uniformBlocksInPool = 3;
-		texturesInPool = 2;
-		setsInPool = 3;
+		uniformBlocksInPool = 5;
+		texturesInPool = 4;
+		setsInPool = 5;
 	}
 	
 	// Here you load and setup all your Vulkan objects
@@ -72,9 +79,9 @@ class MyProject : public BaseProject {
 		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSLglobal, &DSLobj});
 
 		// Models, textures and Descriptors (values assigned to the uniforms)
-		Table.init(this, "models/table.obj");
-		Table_Text.init(this, "textures/airhockey-background.png");
-		DSTable.init(this, &DSLobj, {
+		M_Table.init(this, "models/table.obj");
+		T_Table.init(this, "textures/airhockey-background.png");
+		DS_Table.init(this, &DSLobj, {
 		// the second parameter, is a pointer to the Uniform Set Layout of this set
 		// the last parameter is an array, with one element per binding of the set.
 		// first  elmenet : the binding number
@@ -82,7 +89,7 @@ class MyProject : public BaseProject {
 		// third  element : only for UNIFORMs, the size of the corresponding C++ object
 		// fourth element : only for TEXTUREs, the pointer to the corresponding texture object
 					{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
-					{1, TEXTURE, 0, &Table_Text}
+					{1, TEXTURE, 0, &T_Table}
 				});
 
 		//Disk initialization
@@ -92,6 +99,19 @@ class MyProject : public BaseProject {
 		DS_Disk.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Disk}
+			});
+
+		M_Paddle.init(this, "models/disk.obj");
+		T_Paddle1.init(this, "textures/paddle1.png");
+		DS_Paddle1.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle1}
+			});
+
+		T_Paddle2.init(this, "textures/paddle2.png");
+		DS_Paddle2.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle2}
 			});
 
 		//DS initialization
@@ -104,12 +124,21 @@ class MyProject : public BaseProject {
 
 	// Here you destroy all the objects you created!		
 	void localCleanup() {
-		DSTable.cleanup();
-		Table_Text.cleanup();
-		Table.cleanup();
+		DS_Table.cleanup();
+		T_Table.cleanup();
+		M_Table.cleanup();
+
 		DS_Disk.cleanup();
 		M_Disk.cleanup();
 		T_Disk.cleanup();
+
+		DS_Paddle1.cleanup();
+		M_Paddle.cleanup();
+		T_Paddle1.cleanup();
+
+		DS_Paddle2.cleanup();
+		T_Paddle2.cleanup();
+
 		P1.cleanup();
 		DS_global.cleanup();
 
@@ -130,24 +159,24 @@ class MyProject : public BaseProject {
 			P1.pipelineLayout, 0, 1, &DS_global.descriptorSets[currentImage],
 			0, nullptr);
 				
-		VkBuffer vertexBuffers[] = {Table.vertexBuffer};
+		VkBuffer vertexBuffers[] = {M_Table.vertexBuffer};
 		// property .vertexBuffer of models, contains the VkBuffer handle to its vertex buffer
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		// property .indexBuffer of models, contains the VkBuffer handle to its index buffer
-		vkCmdBindIndexBuffer(commandBuffer, Table.indexBuffer, 0,
+		vkCmdBindIndexBuffer(commandBuffer, M_Table.indexBuffer, 0,
 								VK_INDEX_TYPE_UINT32);
 
 		// property .pipelineLayout of a pipeline contains its layout.
 		// property .descriptorSets of a descriptor set contains its elements.
 		vkCmdBindDescriptorSets(commandBuffer,
 						VK_PIPELINE_BIND_POINT_GRAPHICS,
-						P1.pipelineLayout, 1, 1, &DSTable.descriptorSets[currentImage],
+						P1.pipelineLayout, 1, 1, &DS_Table.descriptorSets[currentImage],
 						0, nullptr);
 						
 		// property .indices.size() of models, contains the number of triangles * 3 of the mesh.
 		vkCmdDrawIndexed(commandBuffer,
-					static_cast<uint32_t>(Table.indices.size()), 1, 0, 0, 0);
+					static_cast<uint32_t>(M_Table.indices.size()), 1, 0, 0, 0);
 
 		//Disk buffer initialization
 
@@ -162,6 +191,28 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Disk.indices.size()), 1, 0, 0, 0);
+
+		//Paddles buffer initialization
+
+		VkBuffer vertexBuffers_Paddle[] = { M_Paddle.vertexBuffer };
+		VkDeviceSize offsets_Paddle[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Paddle, offsets_Paddle);
+		vkCmdBindIndexBuffer(commandBuffer, M_Paddle.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		//Paddle1
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_Paddle1.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Paddle.indices.size()), 1, 0, 0, 0);
+		//Paddle2
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_Paddle2.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Paddle.indices.size()), 1, 0, 0, 0);
 
 	}
 
@@ -214,10 +265,10 @@ class MyProject : public BaseProject {
 			glm::vec3(0.0f, 1.0f, 0.0f));*/
 
 		// Here is where you actually update your uniforms
-		vkMapMemory(device, DSTable.uniformBuffersMemory[0][currentImage], 0,
+		vkMapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage], 0,
 							sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DSTable.uniformBuffersMemory[0][currentImage]);
+		vkUnmapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage]);
 
 
 		//For the disk
@@ -228,6 +279,24 @@ class MyProject : public BaseProject {
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
+
+		//For the first paddle
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.57f, 0.0f, 0.0f));
+
+		// Here is where you actually update your uniforms
+		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage]);
+
+		//For the second paddle
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.57f, 0.0f, 0.0f));
+
+		// Here is where you actually update your uniforms
+		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage]);
 	}	
 };
 
