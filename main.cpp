@@ -232,6 +232,9 @@ class MyProject : public BaseProject {
 	// Here is where you update the uniforms.
 	// Very likely this will be where you will be writing the logic of your application.
 	void updateUniformBuffer(uint32_t currentImage) {
+		
+		//First part to use for translations
+				
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		static float lastTime = 0.0f;
 
@@ -243,13 +246,67 @@ class MyProject : public BaseProject {
 
 		static float debounce = time;
 
+
+	//VAR FOR INPUT MANAGEMENT
+
+		float static yaw_p1 = 0.0f, pitch_p1 = 0.0f, roll_p1;
+		float static yaw_p2 = 0.0f, pitch_p2 = 0.0f, roll_p2;
+		float mx_p1 = 0, my_p1 = 0, mz_p1 = 0;
+		float mx_p2 = 0, my_p2 = 0, mz_p2 = 0;
+		float m_change;
+		float move_speed_paddles = 1.75;
+
+	//INPUT MANAGEMENT
+		//Paddle1
+		if (glfwGetKey(window, GLFW_KEY_D)) {
+			mx_p1 = 1;
+			roll_p1 = 0.0f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A)) {
+			mx_p1 = -1;
+			roll_p1 = 180.0f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_W)) {
+			mz_p1 = 1;
+			roll_p1 = 90.0f - 45.0f * mx_p1;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S)) {
+			mz_p1 = -1;
+			roll_p1 = -90.0f + 45.0f * mx_p1;
+		}
+
+		//Paddle2
+		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
+			mx_p2 = 1;
+			roll_p2 = 0.0f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+			mx_p2 = -1;
+			roll_p2 = 180.0f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_UP)) {
+			mz_p2 = 1;
+			roll_p2 = 90.0f - 45.0f * mx_p2;
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN)) {
+			mz_p2 = -1;
+			roll_p2 = -90.0f + 45.0f * mx_p2;
+		}
+
+
+
+
+	
 					
 		UniformBufferObject ubo{};
 		
 			
 		void* data;
-		
 	
+
+
+	//VIEW CHANGING
+
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				view++;
@@ -267,21 +324,53 @@ class MyProject : public BaseProject {
 		{
 			gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f));		
+			glm::vec3(0.0f, 1.0f, 0.0f));
+
+			m_change = -mx_p1;
+			mx_p1 = mz_p1;
+			mz_p1 = m_change;
+
+			m_change = -mx_p2;
+			mx_p2 = mz_p2;
+			mz_p2 = m_change;
+
 		}
 		else if (view == 2)
 		{
 			gubo.view = glm::lookAt(glm::vec3(1.5f, 0.5f, 0.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f));
+
+			m_change = mx_p1;
+			mx_p1 = -mz_p1;
+			mz_p1 = m_change;
+
+			m_change = mx_p2;
+			mx_p2 = -mz_p2;
+			mz_p2 = m_change;
+
 		}
+
+		
+		//POSITION UPDATE FOR PADDLES
+		static glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
+		if(Pos_p1.x + 0.0705 + mx_p1 * deltaT / move_speed_paddles <= 0.0 &&
+		   Pos_p1.x - 0.0705 + mx_p1 * deltaT / move_speed_paddles >= -0.9465+0.068)
+		Pos_p1.x += mx_p1 * deltaT / move_speed_paddles;
+		if (Pos_p1.z + 0.0705 - mz_p1 * deltaT / move_speed_paddles <=  0.507 - 0.052 &&
+			Pos_p1.z - 0.0705 - mz_p1 * deltaT / move_speed_paddles >= -0.507 + 0.052)
+		Pos_p1.z -= mz_p1 * deltaT / move_speed_paddles;
+
+		static glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
+		if (Pos_p2.x - 0.0705 + mx_p2 * deltaT / move_speed_paddles >= 0.0 &&
+			Pos_p2.x + 0.0705 + mx_p2 * deltaT / move_speed_paddles <= 0.9465-0.068)
+		Pos_p2.x += mx_p2 * deltaT / move_speed_paddles;
+		if (Pos_p2.z + 0.0705 - mz_p2 * deltaT / move_speed_paddles <= 0.507 - 0.052 &&
+			Pos_p2.z - 0.0705 - mz_p2 * deltaT / move_speed_paddles >= -0.507 + 0.052)
+		Pos_p2.z -= mz_p2 * deltaT / move_speed_paddles;
 			
 
 		
-		
-		
-		
-
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
 		memcpy(data, &gubo, sizeof(gubo));
@@ -313,7 +402,11 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
 
 		//For the first paddle
-		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.57f, 0.0f, 0.0f));
+		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(Pos_p1.x, Pos_p1.y, Pos_p1.z)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(roll_p1), glm::vec3(0, 1, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p1), glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1)) *
+			glm::scale(glm::mat4(1.0), glm::vec3(1, 1, 1));
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
@@ -322,7 +415,11 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage]);
 
 		//For the second paddle
-		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.57f, 0.0f, 0.0f));
+		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(Pos_p2.x, Pos_p2.y, Pos_p2.z)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(roll_p2), glm::vec3(0, 1, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p2), glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1)) *
+			glm::scale(glm::mat4(1.0), glm::vec3(1, 1, 1));;
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
