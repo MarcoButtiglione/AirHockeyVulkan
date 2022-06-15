@@ -58,29 +58,38 @@ void Disk::updateDisk(float deltaT,glm::vec2 posPaddle1, glm::vec2 posPaddle2, g
 };
 void Disk::checkPaddleCollision(float deltaT,glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2){
 
-	float distancePad1 = distance(posPaddle1, posDisk);
+	float distancePad1 =  distance(posPaddle1, posDisk);
 	float distancePad2 = distance(posPaddle2, posDisk);
-	if (distancePad1 <= radiusDisk + radiusPaddle) {
-		glm::vec2 vCollision1 = posPaddle1 - posDisk;
+	if (distancePad1 < radiusDisk + radiusPaddle) {
+		glm::vec2 vCollision1 = posDisk - posPaddle1;
 		glm::vec2 vCollision1Norm = glm::normalize(vCollision1);
 		glm::vec2 vRelativeVelocity1 = speedPaddle1 - speedDisk;
 		float speed1 = dot(vRelativeVelocity1, vCollision1Norm);
 		if (speed1 < 0) {
 			return;
 		}
-		speedDisk += speed1 * vCollision1Norm * deltaT;
+		if (abs(speedPaddle1.x) == 0.0f && abs(speedPaddle1.y) == 0.0f) {
+			speedDisk = speed1 * vCollision1Norm;
+		}
+		else {
+			speedDisk = glm::vec2(1.7, 1.7) * vCollision1Norm;
+		}
 		
 	}
-	if (distancePad2 <= radiusDisk + radiusPaddle) {
-		glm::vec2 vCollision2 = posPaddle2 - posDisk;
+	if (distancePad2 < radiusDisk + radiusPaddle) {
+		glm::vec2 vCollision2 = posDisk - posPaddle2;
 		glm::vec2 vCollision2Norm = glm::normalize(vCollision2);
 		glm::vec2 vRelativeVelocity2 = speedPaddle2 - speedDisk;
 		float speed2 = dot(vRelativeVelocity2, vCollision2Norm);
-		if (speed2 < 0) {
+		if (speed2 < 0 ) {
 			return;
 		}
-		speedDisk += speed2 * vCollision2Norm * deltaT;
-
+		if (abs(speedPaddle2.x) == 0.0f && abs(speedPaddle2.y) == 0.0f) {
+			speedDisk = speed2 * vCollision2Norm;
+		}
+		else {
+			speedDisk = glm::vec2(1.7, 1.7) * vCollision2Norm;
+		}
 	}
 	
 	

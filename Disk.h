@@ -15,6 +15,7 @@ private:
 	float radiusPaddle;
 	float widthTable;
 	float lengthTable;
+
 public:
 	Disk(glm::vec2 pos, glm::vec2 speed, float radDisk,float radPaddle, float widthT, float lengthT);
 	glm::vec2 getPos();
