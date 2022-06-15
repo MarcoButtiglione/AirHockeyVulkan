@@ -51,7 +51,9 @@ class MyProject : public BaseProject {
 	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 	glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	glm::vec2 startingPosDisk = glm::vec2(0.0f,0.0f);
-	glm::vec2 startingSpeedDisk = glm::vec2(-1.0f, 0.0f);
+
+	glm::vec2 startingSpeedDisk = glm::vec2(0.0f, 0.0f);
+
 	float radiusDisk = 0.029;
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014-2*0.052;
@@ -274,7 +276,7 @@ class MyProject : public BaseProject {
 		float mx_p1 = 0, my_p1 = 0, mz_p1 = 0;
 		float mx_p2 = 0, my_p2 = 0, mz_p2 = 0;
 		float m_change;
-		float move_speed_paddles = 1.75;
+		float move_speed_paddles = 1.25;
 
 	//INPUT MANAGEMENT
 		//Paddle1
@@ -367,10 +369,11 @@ class MyProject : public BaseProject {
 
 		}
 
+		
+
 		//Disk
 		disk.updateDisk(deltaT, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
 
-		
 		
 		//POSITION UPDATE FOR PADDLES
 		
@@ -388,8 +391,8 @@ class MyProject : public BaseProject {
 		if (Pos_p2.z + 0.0705 - mz_p2 * deltaT / move_speed_paddles <= 0.507 - 0.052 &&
 			Pos_p2.z - 0.0705 - mz_p2 * deltaT / move_speed_paddles >= -0.507 + 0.052)
 		Pos_p2.z -= mz_p2 * deltaT / move_speed_paddles;
-			
 
+	
 		
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
