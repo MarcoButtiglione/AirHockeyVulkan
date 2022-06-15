@@ -8,6 +8,12 @@
 struct globalUniformBufferObject {
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
+	//aggiunte per la luce
+	alignas(16) glm::vec3 lightDir;
+	alignas(16) glm::vec3 lightPos;
+	alignas(16) glm::vec3 lightColor;
+	alignas(16) glm::vec4 lightParams;
+	alignas(16) glm::vec3 eyePos;
 };
 struct UniformBufferObject {
 	alignas(16) glm::mat4 model;
@@ -389,8 +395,18 @@ class MyProject : public BaseProject {
 			Pos_p2.z - 0.0705 - mz_p2 * deltaT / move_speed_paddles >= -0.507 + 0.052)
 		Pos_p2.z -= mz_p2 * deltaT / move_speed_paddles;
 
-	
+		//Adding part for illumination in shader
+
+		gubo.lightColor = glm::vec3(1.0f, 0.0f, 0.0f);
+		gubo.lightDir = glm::vec3(cos(glm::radians(135.0f)) * cos(glm::radians(-30.0f)), sin(glm::radians(135.0f)), cos(glm::radians(135.0f)) * sin(glm::radians(-30.0f)));
+		gubo.lightPos = glm::vec3(-3.0, 3.0, 1.0);
+		gubo.lightParams = glm::vec4(
+			cos(glm::radians(22.5f)), cos(glm::radians(30.0f)), 1.0, 1.8f
+		);
+		gubo.eyePos = glm::vec3(0.0f, 1.0f, 0.0f);
 		
+		//TO SEE
+
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
 		memcpy(data, &gubo, sizeof(gubo));
