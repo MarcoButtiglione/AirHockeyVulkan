@@ -51,7 +51,7 @@ class MyProject : public BaseProject {
 	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 	glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	glm::vec2 startingPosDisk = glm::vec2(0.3f,0.0f);
-	glm::vec2 startingSpeedDisk = glm::vec2(0.0f, 0.0f);
+	glm::vec2 startingSpeedDisk = glm::vec2(1.0f, 0.0f);
 	float radiusDisk = 0.029;
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014-2*0.052;
@@ -313,19 +313,6 @@ class MyProject : public BaseProject {
 			roll_p2 = -90.0f + 45.0f * mx_p2;
 		}
 		
-		//Disk
-		bool isMovingPad1 = false;
-		bool isMovingPad2 = false;
-
-
-		if (mx_p1 != 0 || mz_p1 != 0) {
-			isMovingPad1 = true;
-		}
-		if (mx_p2 != 0 || mz_p2 != 0) {
-			isMovingPad2 = true;
-		}
-		
-		disk.updateDisk(deltaT,isMovingPad1,isMovingPad2, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z));
 		
 		UniformBufferObject ubo{};
 		
@@ -379,6 +366,10 @@ class MyProject : public BaseProject {
 			mz_p2 = m_change;
 
 		}
+
+		//Disk
+		disk.updateDisk(deltaT, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
+
 
 		
 		//POSITION UPDATE FOR PADDLES

@@ -23,8 +23,8 @@ public:
 	void setPos(glm::vec2 pos);
 	void setSpeed(glm::vec2 speed);
 
-	void updateDisk(float deltaT,bool isMovingPad1,bool isMovingPad2,glm::vec2 posPaddle1, glm::vec2 posPaddle2 );
-	void checkPaddleCollision(float deltaT, bool isMovingPad1, bool isMovingPad2,glm::vec2 posPaddle1, glm::vec2 posPaddle2);
+	void updateDisk(float deltaT,glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2);
+	void checkPaddleCollision(float deltaT, glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2);
 	void checkTableCollision(float deltaT);
 
 };
