@@ -1,6 +1,7 @@
 // This has been adapted from the Vulkan tutorial
 
 #include "MyProject.hpp"
+#include "Disk.h"
 
 
 // The uniform buffer object used in this example
@@ -46,13 +47,25 @@ class MyProject : public BaseProject {
 	globalUniformBufferObject gubo{};
 	int view;
 
+
+	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
+	glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
+	glm::vec2 startingPosDisk = glm::vec2(0.3f,0.0f);
+	glm::vec2 startingSpeedDisk = glm::vec2(0.0f, 0.0f);
+	float radiusDisk = 0.029;
+	float radiusPaddle = 0.0705;
+	float widthTable = 1.014-2*0.052;
+	float lengthTable = 1.893-2*0.068;
+	Disk disk = Disk::Disk(startingPosDisk, startingSpeedDisk, radiusDisk, radiusPaddle, widthTable, lengthTable);
+	
+
 	
 	// Here you set the main application parameters
 	void setWindowParameters() {
 		// window size, titile and initial background
 		windowWidth = 1920;
 		windowHeight = 1080;
-		windowTitle = "My Project";
+		windowTitle = "Air Hockey";
 		initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
 		
 		// Descriptor pool sizes
@@ -132,6 +145,11 @@ class MyProject : public BaseProject {
 			swapChainExtent.width / (float)swapChainExtent.height,
 			0.1f, 10.0f);
 		gubo.proj[1][1] *= -1;
+		
+
+
+
+		
 	}
 
 	// Here you destroy all the objects you created!		
@@ -246,6 +264,8 @@ class MyProject : public BaseProject {
 
 		static float debounce = time;
 
+		
+
 
 	//VAR FOR INPUT MANAGEMENT
 
@@ -292,12 +312,21 @@ class MyProject : public BaseProject {
 			mz_p2 = -1;
 			roll_p2 = -90.0f + 45.0f * mx_p2;
 		}
+		
+		//Disk
+		bool isMovingPad1 = false;
+		bool isMovingPad2 = false;
 
 
-
-
-	
-					
+		if (mx_p1 != 0 || mz_p1 != 0) {
+			isMovingPad1 = true;
+		}
+		if (mx_p2 != 0 || mz_p2 != 0) {
+			isMovingPad2 = true;
+		}
+		
+		disk.updateDisk(deltaT,isMovingPad1,isMovingPad2, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z));
+		
 		UniformBufferObject ubo{};
 		
 			
@@ -353,7 +382,7 @@ class MyProject : public BaseProject {
 
 		
 		//POSITION UPDATE FOR PADDLES
-		static glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
+		
 		if(Pos_p1.x + 0.0705 + mx_p1 * deltaT / move_speed_paddles <= 0.0 &&
 		   Pos_p1.x - 0.0705 + mx_p1 * deltaT / move_speed_paddles >= -0.9465+0.068)
 		Pos_p1.x += mx_p1 * deltaT / move_speed_paddles;
@@ -361,7 +390,7 @@ class MyProject : public BaseProject {
 			Pos_p1.z - 0.0705 - mz_p1 * deltaT / move_speed_paddles >= -0.507 + 0.052)
 		Pos_p1.z -= mz_p1 * deltaT / move_speed_paddles;
 
-		static glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
+		
 		if (Pos_p2.x - 0.0705 + mx_p2 * deltaT / move_speed_paddles >= 0.0 &&
 			Pos_p2.x + 0.0705 + mx_p2 * deltaT / move_speed_paddles <= 0.9465-0.068)
 		Pos_p2.x += mx_p2 * deltaT / move_speed_paddles;
@@ -393,7 +422,7 @@ class MyProject : public BaseProject {
 
 
 		//For the disk
-		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,0.0f,0.0f));
+		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(disk.getPos().x, 0.0f, disk.getPos().y));
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
