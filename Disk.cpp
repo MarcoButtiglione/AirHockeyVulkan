@@ -34,7 +34,7 @@ void Disk::setSpeed(glm::vec2 speed)
 
 void Disk::updateDisk(float deltaT, glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2)
 {
-	//checkPaddleCollision(deltaT,posPaddle1, posPaddle2, speedPaddle1, speedPaddle2);
+	checkPaddleCollision(deltaT,posPaddle1, posPaddle2, speedPaddle1, speedPaddle2);
 	checkTableCollision(deltaT);
 
 
@@ -112,21 +112,44 @@ void Disk::checkTableCollision(float deltaT) {
 		if (posDisk[1] - radiusDisk + speedDisk[1] * deltaT > (-widthTable / 2) + 0.2 &&
 			posDisk[1] + radiusDisk + speedDisk[1] * deltaT < (widthTable / 2) - 0.2)
 		{
-			if (posDisk[0] - radiusDisk + speedDisk[0] * deltaT < (- lengthTable / 2)-0.1)
+			if (posDisk[0] - radiusDisk + speedDisk[0] * deltaT < (- lengthTable / 2)-0.05)
 			{
 				//WIN BLUE
-				posDisk = glm::vec2(0.0f, 0.0f);
+				posDisk = glm::vec2(-0.3f, 0.0f);
 				speedDisk = glm::vec2(0.0f, 0.0f);
 				std::cout << "WIN BLUE";
 			}
 			if (posDisk[0] + radiusDisk + speedDisk[0] * deltaT > (lengthTable / 2) + 0.1) 
 			{
 				//WIN RED
-				posDisk = glm::vec2(0.0f, 0.0f);
+				posDisk = glm::vec2(0.3f, 0.0f);
 				speedDisk = glm::vec2(0.0f, 0.0f);
 				std::cout << "WIN RED";
 			}
-			
+		}
+		else {
+			glm::vec2 edgeC0 = glm::vec2((-lengthTable / 2) + 0.2f, (-widthTable / 2) + 0.2f);
+			glm::vec2 edgeC1 = glm::vec2((-lengthTable / 2) + 0.2f, (widthTable / 2) - 0.2f);
+			glm::vec2 edgeC2 = glm::vec2((lengthTable / 2) - 0.2f, (-widthTable / 2) + 0.2f);
+			glm::vec2 edgeC3 = glm::vec2((lengthTable / 2) - 0.2f, (widthTable / 2) - 0.2f);
+
+			float distanceDiskC0 = distance(posDisk, edgeC0);
+			float distanceDiskC1 = distance(posDisk, edgeC1);
+			float distanceDiskC2 = distance(posDisk, edgeC2);
+			float distanceDiskC3 = distance(posDisk, edgeC3);
+
+			if ((posDisk[0]< (-lengthTable / 2) + 0.2f &&posDisk[1]< (-widthTable / 2) + 0.2f) && distanceDiskC0 + radiusDisk>0.18) {
+				speedDisk = -speedDisk;
+			}
+			if ((posDisk[0] < (-lengthTable / 2) + 0.2f && posDisk[1] > (widthTable / 2) - 0.2f) && distanceDiskC1 + radiusDisk > 0.18) {
+				speedDisk = -speedDisk;
+			}
+			if ((posDisk[0] > (lengthTable / 2) - 0.2f && posDisk[1] < (-widthTable / 2) + 0.2f) && distanceDiskC2 + radiusDisk > 0.18) {
+				speedDisk = -speedDisk;
+			}
+			if ((posDisk[0] > (lengthTable / 2) - 0.2f && posDisk[1] > (widthTable / 2) - 0.2f) && distanceDiskC3 + radiusDisk > 0.18) {
+				speedDisk = -speedDisk;
+			}
 		}
 	}
 
