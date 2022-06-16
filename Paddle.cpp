@@ -13,6 +13,9 @@ Paddle::Paddle(glm::vec3 pos, float radDisk, float radPaddle, float widthTab, fl
 glm::vec3 Paddle::getPos() {
 	return posPaddle;
 }
+void Paddle::setPos(glm::vec3 pos) {
+	posPaddle = pos;
+}
 
 void Paddle::updatespeed(int check,float T) {
 	if (check == 1) {
