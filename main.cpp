@@ -311,7 +311,7 @@ class MyProject : public BaseProject {
 		float mx_p1 = 0, my_p1 = 0, mz_p1 = 0;
 		float mx_p2 = 0, my_p2 = 0, mz_p2 = 0;
 		float m_change;
-		float move_speed_paddles = 1.25;
+		float move_speed_paddles = 1.15;
 
 	//INPUT MANAGEMENT
 		//Paddle1
