@@ -1,11 +1,9 @@
-// This has been adapted from the Vulkan tutorial
 
 #include "MyProject.hpp"
 #include "Disk.h"
 #include "Paddle.h"
 
 
-// The uniform buffer object used in this example
 struct globalUniformBufferObject {
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
@@ -20,43 +18,41 @@ struct UniformBufferObject {
 	alignas(16) glm::mat4 model;
 };
 
-// MAIN !
 class MyProject : public BaseProject {
 	protected:
-	// Here you list all the Vulkan objects you need:
 
 	// Descriptor Layouts [what will be passed to the shaders]
 	DescriptorSetLayout DSLglobal;
 	DescriptorSetLayout DSLobj;
 
-	// Pipelines [Shader couples]
+	// Pipelines
 	Pipeline P1;
 
 	// Models, textures and Descriptors (values assigned to the uniforms)
+	//Table
 	Model M_Table;
 	Texture T_Table;
 	DescriptorSet DS_Table;	//instances of DSLobj
-
+	//Disk
 	Model M_Disk;
 	Texture T_Disk;
 	DescriptorSet DS_Disk;
-
+	//Paddle red and blue
 	Model M_Paddle;
 	Texture T_Paddle1;
 	DescriptorSet DS_Paddle1;	//First instance of the paddle
-
 	Texture T_Paddle2;
 	DescriptorSet DS_Paddle2;   //Second instance of the paddle
-
+	//Ground
 	Model M_Ground;
 	Texture T_Ground;
 	DescriptorSet DS_Ground;
-
+	//Point counter
 	Model M_PointCounter;
 	Texture T_PointCounter;
 	DescriptorSet DS_PointCounter1;
 	DescriptorSet DS_PointCounter2;
-
+	//Point
 	Model M_Point;
 	DescriptorSet DS_PointRed1;
 	DescriptorSet DS_PointRed2;
@@ -69,30 +65,32 @@ class MyProject : public BaseProject {
 	DescriptorSet DS_PointBlue4;
 	DescriptorSet DS_PointBlue5;
 
-
 	// Instance DS global
 	DescriptorSet DS_global;	//instance of DSLglobal
 
 	globalUniformBufferObject gubo{};
-	int view;
 
+	//Game variables
+	//Model dimensions
 	float radiusDisk = 0.029;
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014 - 2 * 0.052;
 	float lengthTable = 1.893 - 2 * 0.068;
 
-
+	int view;
+	//Initial position/speed
 	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 	glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	glm::vec2 startingPosDisk = glm::vec2(0.0f,0.0f);
 	glm::vec2 startingSpeedDisk = glm::vec2(0.0f, 0.0f);
 
+	//Objects
 	Paddle paddle1 = Paddle::Paddle(Pos_p1, radiusDisk, radiusPaddle, widthTable, lengthTable, 1.15);
 	Paddle paddle2 = Paddle::Paddle(Pos_p2, radiusDisk, radiusPaddle, widthTable, lengthTable, 1.15);
 	Disk disk = Disk::Disk(startingPosDisk, startingSpeedDisk, radiusDisk, radiusPaddle, widthTable, lengthTable);
-
-	int pointRed = 0;
-	int pointBlue = 0;
+	//Score
+	int scoreRed = 0;
+	int scoreBlue = 0;
 
 	// Here you set the main application parameters
 	void setWindowParameters() {
@@ -103,7 +101,7 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
 		// Descriptor pool sizes
-		uniformBlocksInPool = 9;
+		uniformBlocksInPool = 18;
 		texturesInPool =20;
 		setsInPool = 18;
 
@@ -172,6 +170,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Ground}
 			});
+		
 		//Point Counter
 		M_PointCounter.init(this, "models/point_counter.obj");
 		T_PointCounter.init(this, "textures/point_counter.png");
@@ -184,16 +183,18 @@ class MyProject : public BaseProject {
 						{1, TEXTURE, 0, &T_PointCounter}
 			});
 
-
+		
 		M_Point.init(this, "models/point.obj");
 		DS_PointRed1.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
 			});
+		
 		DS_PointRed2.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
 			});
+		
 		DS_PointRed3.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
@@ -226,7 +227,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle2}
 			});
-
+		
 
 		//DS initialization
 		DS_global.init(this, &DSLglobal, {
@@ -269,6 +270,7 @@ class MyProject : public BaseProject {
 		T_Ground.cleanup();
 		M_Ground.cleanup();
 
+		
 		M_PointCounter.cleanup();
 		T_PointCounter.cleanup();
 		DS_PointCounter1.cleanup();
@@ -285,6 +287,7 @@ class MyProject : public BaseProject {
 		DS_PointBlue3.cleanup();
 		DS_PointBlue4.cleanup();
 		DS_PointBlue5.cleanup();
+		
 
 		P1.cleanup();
 		DS_global.cleanup();
@@ -376,7 +379,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Ground.indices.size()), 1, 0, 0, 0);
 
-
+		
 		//PointCounter buffer initialization
 
 		VkBuffer vertexBuffers_PointCounter[] = { M_PointCounter.vertexBuffer };
@@ -480,33 +483,33 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
-
+			
 	}
 
 
 	void goalRed() {
-		if (pointRed == 5) {
-			pointRed = 0;
+		if (scoreRed == 5) {
+			scoreRed = 0;
 		}
 		else
 		{
-			pointRed++;
+			scoreRed++;
 		}
+		paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
+		paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
 
-		Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
-		Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	}
 
 	void goalBlue() {
-		if (pointBlue == 5) {
-			pointBlue = 0;
+		if (scoreBlue == 5) {
+			scoreBlue = 0;
 		}
 		else {
-			pointBlue++;
+			scoreBlue++;
 		}
 
-		Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
-		Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
+		paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
+		paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
 	}
 
 
@@ -586,7 +589,19 @@ class MyProject : public BaseProject {
 			paddle1.updatespeed(0, deltaT);
 			paddle2.updatespeed(0, deltaT);
 		}
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				scoreBlue = 0;
+				scoreRed = 0;
+				paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
+				paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
+				disk.setPos(glm::vec3(0.0f, 0.0f, 0.0f));
+				disk.setSpeed(glm::vec2(0.0f, 0.0f));
 
+				debounce = time;
+				
+			}
+		}
 
 		UniformBufferObject ubo{};
 
@@ -741,7 +756,7 @@ class MyProject : public BaseProject {
 		int moveRed4 = 0;
 		int moveRed5 = 0;
 
-		switch (pointRed) {
+		switch (scoreRed) {
 		case 1:
 			moveRed1 = 1;
 			break;
@@ -775,7 +790,7 @@ class MyProject : public BaseProject {
 		int moveBlue4 = 0;
 		int moveBlue5 = 0;
 
-		switch (pointBlue) {
+		switch (scoreBlue) {
 		case 1:
 			moveBlue1 = 1;
 			break;
@@ -803,7 +818,10 @@ class MyProject : public BaseProject {
 			break;
 		}
 
-
+		
+		
+		
+		
 		//For the PointCounter1
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.0f));
 
@@ -884,7 +902,6 @@ class MyProject : public BaseProject {
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage]);
-
 
 
 	}
