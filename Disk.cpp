@@ -143,7 +143,7 @@ void Disk::checkTableCollision(float deltaT) {
 	
 			if ((posDisk.x - radiusDisk + speedDisk.x * deltaT <= (-lengthTable / 2) + 0.2f &&
 				posDisk.y - radiusDisk + speedDisk.y * deltaT <= (-widthTable / 2) + 0.2f) &&
-				distanceDiskC0 > 0.14) {
+				distanceDiskC0 > 0.165) {
 				glm::vec2 vCollisionC0 = posDisk - edgeC0;
 				glm::vec2 vCollisionC0Norm = glm::normalize(vCollisionC0);
 				float speed1 = dot(speedDisk, vCollisionC0Norm);
@@ -154,7 +154,7 @@ void Disk::checkTableCollision(float deltaT) {
 			}
 			if ((posDisk.x - radiusDisk + speedDisk.x * deltaT <= (-lengthTable / 2) + 0.2f &&
 				posDisk.y + radiusDisk + speedDisk.y * deltaT >= (widthTable / 2) - 0.2f) &&
-				distanceDiskC1 > 0.14) {
+				distanceDiskC1 > 0.165) {
 				glm::vec2 vCollisionC1 = posDisk - edgeC1;
 				glm::vec2 vCollisionC1Norm = glm::normalize(vCollisionC1);
 				float speed1 = dot(speedDisk, vCollisionC1Norm);
@@ -165,7 +165,7 @@ void Disk::checkTableCollision(float deltaT) {
 			}
 			if ((posDisk.x + radiusDisk + speedDisk.x * deltaT >= (lengthTable / 2) - 0.2f &&
 				posDisk.y - radiusDisk + speedDisk.y * deltaT <= (-widthTable / 2) + 0.2f) &&
-				distanceDiskC2 > 0.14) {
+				distanceDiskC2 > 0.165) {
 				glm::vec2 vCollisionC2 = posDisk - edgeC2;
 				glm::vec2 vCollisionC2Norm = glm::normalize(vCollisionC2);
 				float speed1 = dot(speedDisk, vCollisionC2Norm);
@@ -176,7 +176,7 @@ void Disk::checkTableCollision(float deltaT) {
 			}
 			if ((posDisk.x - radiusDisk + speedDisk.x * deltaT >= (lengthTable / 2) - 0.2f &&
 				posDisk.y + radiusDisk + speedDisk.y * deltaT >= (widthTable / 2) - 0.2f) &&
-				distanceDiskC3 > 0.14) {
+				distanceDiskC3 > 0.165) {
 				glm::vec2 vCollisionC3 = posDisk - edgeC3;
 				glm::vec2 vCollisionC3Norm = glm::normalize(vCollisionC3);
 				float speed1 = dot(speedDisk, vCollisionC3Norm);
