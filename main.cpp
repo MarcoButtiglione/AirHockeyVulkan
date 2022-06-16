@@ -68,6 +68,7 @@ class MyProject : public BaseProject {
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014-2*0.052;
 	float lengthTable = 1.893-2*0.068;
+	float move_speed_paddles = 1.15;
 	Disk disk = Disk::Disk(startingPosDisk, startingSpeedDisk, radiusDisk, radiusPaddle, widthTable, lengthTable);
 	
 
@@ -311,7 +312,7 @@ class MyProject : public BaseProject {
 		float mx_p1 = 0, my_p1 = 0, mz_p1 = 0;
 		float mx_p2 = 0, my_p2 = 0, mz_p2 = 0;
 		float m_change;
-		float move_speed_paddles = 1.15;
+		
 
 	//INPUT MANAGEMENT
 		//Paddle1
@@ -348,6 +349,16 @@ class MyProject : public BaseProject {
 		if (glfwGetKey(window, GLFW_KEY_DOWN)) {
 			mz_p2 = -1;
 			roll_p2 = -90.0f + 45.0f * mx_p2;
+		}
+
+		//Management input
+		if (glfwGetKey(window, GLFW_KEY_Q)) {
+			if(move_speed_paddles>0.6)
+			move_speed_paddles -= 0.5 * deltaT;
+		}
+		if (glfwGetKey(window, GLFW_KEY_E)) {
+			if (move_speed_paddles < 1.75)
+			move_speed_paddles += 0.5 * deltaT;
 		}
 		
 		
