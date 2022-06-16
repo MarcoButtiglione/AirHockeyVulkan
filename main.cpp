@@ -2,6 +2,7 @@
 
 #include "MyProject.hpp"
 #include "Disk.h"
+#include "Paddle.h"
 
 
 // The uniform buffer object used in this example
@@ -19,11 +20,11 @@ struct UniformBufferObject {
 	alignas(16) glm::mat4 model;
 };
 
-// MAIN ! 
+// MAIN !
 class MyProject : public BaseProject {
 	protected:
 	// Here you list all the Vulkan objects you need:
-	
+
 	// Descriptor Layouts [what will be passed to the shaders]
 	DescriptorSetLayout DSLglobal;
 	DescriptorSetLayout DSLobj;
@@ -38,7 +39,7 @@ class MyProject : public BaseProject {
 
 	Model M_Disk;
 	Texture T_Disk;
-	DescriptorSet DS_Disk;	
+	DescriptorSet DS_Disk;
 
 	Model M_Paddle;
 	Texture T_Paddle1;
@@ -46,10 +47,10 @@ class MyProject : public BaseProject {
 
 	Texture T_Paddle2;
 	DescriptorSet DS_Paddle2;   //Second instance of the paddle
-	
+
 	Model M_Ground;
 	Texture T_Ground;
-	DescriptorSet DS_Ground;	
+	DescriptorSet DS_Ground;
 
 	Model M_PointCounter;
 	Texture T_PointCounter;
@@ -75,20 +76,21 @@ class MyProject : public BaseProject {
 	globalUniformBufferObject gubo{};
 	int view;
 
+	float radiusDisk = 0.029;
+	float radiusPaddle = 0.0705;
+	float widthTable = 1.014 - 2 * 0.052;
+	float lengthTable = 1.893 - 2 * 0.068;
+
 
 	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 	glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	glm::vec2 startingPosDisk = glm::vec2(0.0f,0.0f);
-
 	glm::vec2 startingSpeedDisk = glm::vec2(0.0f, 0.0f);
 
-	float radiusDisk = 0.029;
-	float radiusPaddle = 0.0705;
-	float widthTable = 1.014-2*0.052;
-	float lengthTable = 1.893-2*0.068;
-	float move_speed_paddles = 1.15;
+	Paddle paddle1 = Paddle::Paddle(Pos_p1, radiusDisk, radiusPaddle, widthTable, lengthTable, 1.15);
+	Paddle paddle2 = Paddle::Paddle(Pos_p2, radiusDisk, radiusPaddle, widthTable, lengthTable, 1.15);
 	Disk disk = Disk::Disk(startingPosDisk, startingSpeedDisk, radiusDisk, radiusPaddle, widthTable, lengthTable);
-	
+
 	int pointRed = 0;
 	int pointBlue = 0;
 
@@ -99,14 +101,14 @@ class MyProject : public BaseProject {
 		windowHeight = 1080;
 		windowTitle = "Air Hockey";
 		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
-		
+
 		// Descriptor pool sizes
 		uniformBlocksInPool = 9;
 		texturesInPool =20;
 		setsInPool = 18;
 
 	}
-	
+
 	// Here you load and setup all your Vulkan objects
 	void localInit() {
 		// Descriptor Layouts [what will be passed to the shaders]
@@ -181,7 +183,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_PointCounter}
 			});
-		
+
 
 		M_Point.init(this, "models/point.obj");
 		DS_PointRed1.init(this, &DSLobj, {
@@ -239,14 +241,14 @@ class MyProject : public BaseProject {
 			swapChainExtent.width / (float)swapChainExtent.height,
 			0.1f, 10.0f);
 		gubo.proj[1][1] *= -1;
-		
 
 
 
-		
+
+
 	}
 
-	// Here you destroy all the objects you created!		
+	// Here you destroy all the objects you created!
 	void localCleanup() {
 		DS_Table.cleanup();
 		T_Table.cleanup();
@@ -290,12 +292,12 @@ class MyProject : public BaseProject {
 		DSLglobal.cleanup();
 		DSLobj.cleanup();
 	}
-	
+
 	// Here it is the creation of the command buffer:
 	// You send to the GPU all the objects you want to draw,
 	// with their buffers and textures
 	void populateCommandBuffer(VkCommandBuffer commandBuffer, int currentImage) {
-				
+
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 				P1.graphicsPipeline);
 
@@ -303,7 +305,7 @@ class MyProject : public BaseProject {
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 0, 1, &DS_global.descriptorSets[currentImage],
 			0, nullptr);
-				
+
 		VkBuffer vertexBuffers[] = {M_Table.vertexBuffer};
 		// property .vertexBuffer of models, contains the VkBuffer handle to its vertex buffer
 		VkDeviceSize offsets[] = {0};
@@ -318,7 +320,7 @@ class MyProject : public BaseProject {
 						VK_PIPELINE_BIND_POINT_GRAPHICS,
 						P1.pipelineLayout, 1, 1, &DS_Table.descriptorSets[currentImage],
 						0, nullptr);
-						
+
 		// property .indices.size() of models, contains the number of triangles * 3 of the mesh.
 		vkCmdDrawIndexed(commandBuffer,
 					static_cast<uint32_t>(M_Table.indices.size()), 1, 0, 0, 0);
@@ -490,7 +492,7 @@ class MyProject : public BaseProject {
 		{
 			pointRed++;
 		}
-		
+
 		Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 		Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	}
@@ -502,7 +504,7 @@ class MyProject : public BaseProject {
 		else {
 			pointBlue++;
 		}
-		
+
 		Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 		Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	}
@@ -512,9 +514,9 @@ class MyProject : public BaseProject {
 	// Here is where you update the uniforms.
 	// Very likely this will be where you will be writing the logic of your application.
 	void updateUniformBuffer(uint32_t currentImage) {
-		
+
 		//First part to use for translations
-				
+
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		static float lastTime = 0.0f;
 
@@ -526,7 +528,7 @@ class MyProject : public BaseProject {
 
 		static float debounce = time;
 
-		
+
 
 
 	//VAR FOR INPUT MANAGEMENT
@@ -536,7 +538,7 @@ class MyProject : public BaseProject {
 		float mx_p1 = 0, my_p1 = 0, mz_p1 = 0;
 		float mx_p2 = 0, my_p2 = 0, mz_p2 = 0;
 		float m_change;
-		
+
 
 	//INPUT MANAGEMENT
 		//Paddle1
@@ -577,20 +579,20 @@ class MyProject : public BaseProject {
 
 		//Management input
 		if (glfwGetKey(window, GLFW_KEY_Q)) {
-			if(move_speed_paddles>0.6)
-			move_speed_paddles -= 0.5 * deltaT;
+			paddle1.updatespeed(1,deltaT);
+			paddle2.updatespeed(1, deltaT);
 		}
 		if (glfwGetKey(window, GLFW_KEY_E)) {
-			if (move_speed_paddles < 1.75)
-			move_speed_paddles += 0.5 * deltaT;
+			paddle1.updatespeed(0, deltaT);
+			paddle2.updatespeed(0, deltaT);
 		}
-		
-		
+
+
 		UniformBufferObject ubo{};
-		
-			
+
+
 		void* data;
-	
+
 
 
 	//VIEW CHANGING
@@ -642,14 +644,10 @@ class MyProject : public BaseProject {
 			gubo.eyePos = glm::vec3(1.5f, 0.5f, 0.0f);
 		}
 
-		
+
 
 		//Disk
-		//Status:
-		//0: nothing
-		//1: goal Blue
-		//2: goal Red
-		int status = disk.updateDisk(deltaT, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
+		int status = disk.updateDisk(deltaT, glm::vec2(paddle1.getPos().x, paddle1.getPos().z), glm::vec2(paddle2.getPos().x, paddle2.getPos().z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
 
 		switch (status) {
 		case 0:
@@ -661,23 +659,11 @@ class MyProject : public BaseProject {
 			goalRed();
 			break;
 		}
-		
-		//POSITION UPDATE FOR PADDLES
-		
-		if(Pos_p1.x + 0.0705 + mx_p1 * deltaT / move_speed_paddles <= 0.0 &&
-		   Pos_p1.x - 0.0705 + mx_p1 * deltaT / move_speed_paddles >= -0.9465+0.068)
-		Pos_p1.x += mx_p1 * deltaT / move_speed_paddles;
-		if (Pos_p1.z + 0.0705 - mz_p1 * deltaT / move_speed_paddles <=  0.507 - 0.052 &&
-			Pos_p1.z - 0.0705 - mz_p1 * deltaT / move_speed_paddles >= -0.507 + 0.052)
-		Pos_p1.z -= mz_p1 * deltaT / move_speed_paddles;
 
-		
-		if (Pos_p2.x - 0.0705 + mx_p2 * deltaT / move_speed_paddles >= 0.0 &&
-			Pos_p2.x + 0.0705 + mx_p2 * deltaT / move_speed_paddles <= 0.9465-0.068)
-		Pos_p2.x += mx_p2 * deltaT / move_speed_paddles;
-		if (Pos_p2.z + 0.0705 - mz_p2 * deltaT / move_speed_paddles <= 0.507 - 0.052 &&
-			Pos_p2.z - 0.0705 - mz_p2 * deltaT / move_speed_paddles >= -0.507 + 0.052)
-		Pos_p2.z -= mz_p2 * deltaT / move_speed_paddles;
+		//POSITION UPDATE FOR PADDLES
+		paddle1.updatePaddle1(deltaT,mx_p1,mz_p1);
+		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
+
 
 		//Adding part for illumination in shader
 
@@ -688,23 +674,17 @@ class MyProject : public BaseProject {
 			cos(glm::radians(0.0f)), cos(glm::radians(25.0f)), 2.0f, 1.8f
 		);
 		gubo.gamma = 50.0f;
-		
-		
+
 		//TO SEE
 
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
 		memcpy(data, &gubo, sizeof(gubo));
 		vkUnmapMemory(device, DS_global.uniformBuffersMemory[0][currentImage]);
-		
+
 
 		//For the table
 		ubo.model = glm::mat4(1.0f);
-		
-		//Previous table rotaded
-		/*ubo.model = glm::rotate(glm::mat4(1.0f),
-			glm::radians(45.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f));*/
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage], 0,
@@ -723,11 +703,10 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
 
 		//For the first paddle
-		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(Pos_p1.x, Pos_p1.y, Pos_p1.z)) *
+		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle1.getPos().x, paddle1.getPos().y, paddle1.getPos().z)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(roll_p1), glm::vec3(0, 1, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p1), glm::vec3(1, 0, 0)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1)) *
-			glm::scale(glm::mat4(1.0), glm::vec3(1, 1, 1));
+			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1));
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
@@ -736,11 +715,10 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage]);
 
 		//For the second paddle
-		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(Pos_p2.x, Pos_p2.y, Pos_p2.z)) *
+		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle2.getPos().x, paddle2.getPos().y, paddle2.getPos().z)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(roll_p2), glm::vec3(0, 1, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p2), glm::vec3(1, 0, 0)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1)) *
-			glm::scale(glm::mat4(1.0), glm::vec3(1, 1, 1));;
+			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1));
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
@@ -909,7 +887,7 @@ class MyProject : public BaseProject {
 
 
 
-	}	
+	}
 };
 
 // This is the main: probably you do not need to touch this!
