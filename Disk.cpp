@@ -103,17 +103,9 @@ void Disk::checkTableCollision(float deltaT) {
 	float cut=0.2;
 	float maxdistance=0.165;
 
-	//Collision check on the long side of the table
-	//If the disk is in the inner rectangle of the table
-	if (posDisk.x - radiusDisk + speedDisk.x * deltaT >= (-lengthTable / 2) + cut &&
-		posDisk.x + radiusDisk + speedDisk.x * deltaT <= (lengthTable / 2) - cut)
-	{   //check on the inside part of the rectangle, to change direction vertically
-		if (posDisk.y - radiusDisk + speedDisk.y * deltaT<= -widthTable / 2 || posDisk.y + radiusDisk + speedDisk.y * deltaT>= widthTable / 2) {
-			speedDisk.y = -speedDisk.y;
-		}
-	}
+
 	//Edge and door collision control
-	else {
+	
 		if (posDisk.y - radiusDisk + speedDisk.y * deltaT <= -widthTable / 2 || posDisk.y + radiusDisk + speedDisk.y * deltaT >= widthTable / 2) {
 			speedDisk.y = -speedDisk.y;
 		}
@@ -193,7 +185,7 @@ void Disk::checkTableCollision(float deltaT) {
 				speedDisk = -speed1 * vCollisionC3Norm;
 			}
 		}
-	}
+	
 
 
 	/*
