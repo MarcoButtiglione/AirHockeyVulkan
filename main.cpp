@@ -51,6 +51,24 @@ class MyProject : public BaseProject {
 	Texture T_Ground;
 	DescriptorSet DS_Ground;	
 
+	Model M_PointCounter;
+	Texture T_PointCounter;
+	DescriptorSet DS_PointCounter1;
+	DescriptorSet DS_PointCounter2;
+
+	Model M_Point;
+	DescriptorSet DS_PointRed1;
+	DescriptorSet DS_PointRed2;
+	DescriptorSet DS_PointRed3;
+	DescriptorSet DS_PointRed4;
+	DescriptorSet DS_PointRed5;
+	DescriptorSet DS_PointBlue1;
+	DescriptorSet DS_PointBlue2;
+	DescriptorSet DS_PointBlue3;
+	DescriptorSet DS_PointBlue4;
+	DescriptorSet DS_PointBlue5;
+
+
 	// Instance DS global
 	DescriptorSet DS_global;	//instance of DSLglobal
 
@@ -82,9 +100,9 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 		
 		// Descriptor pool sizes
-		uniformBlocksInPool = 6;
-		texturesInPool = 5;
-		setsInPool = 6;
+		uniformBlocksInPool = 9;
+		texturesInPool =20;
+		setsInPool = 18;
 
 	}
 	
@@ -151,6 +169,61 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Ground}
 			});
+		//Point Counter
+		M_PointCounter.init(this, "models/point_counter.obj");
+		T_PointCounter.init(this, "textures/point_counter.png");
+		DS_PointCounter1.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_PointCounter}
+			});
+		DS_PointCounter2.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_PointCounter}
+			});
+		
+
+		M_Point.init(this, "models/point.obj");
+		DS_PointRed1.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle1}
+			});
+		DS_PointRed2.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle1}
+			});
+		DS_PointRed3.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle1}
+			});
+		DS_PointRed4.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle1}
+			});
+		DS_PointRed5.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle1}
+			});
+		DS_PointBlue1.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle2}
+			});
+		DS_PointBlue2.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle2}
+			});
+		DS_PointBlue3.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle2}
+			});
+		DS_PointBlue4.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle2}
+			});
+		DS_PointBlue5.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Paddle2}
+			});
+
 
 		//DS initialization
 		DS_global.init(this, &DSLglobal, {
@@ -192,6 +265,23 @@ class MyProject : public BaseProject {
 		DS_Ground.cleanup();
 		T_Ground.cleanup();
 		M_Ground.cleanup();
+
+		M_PointCounter.cleanup();
+		T_PointCounter.cleanup();
+		DS_PointCounter1.cleanup();
+		DS_PointCounter2.cleanup();
+
+		M_Point.cleanup();
+		DS_PointRed1.cleanup();
+		DS_PointRed2.cleanup();
+		DS_PointRed3.cleanup();
+		DS_PointRed4.cleanup();
+		DS_PointRed5.cleanup();
+		DS_PointBlue1.cleanup();
+		DS_PointBlue2.cleanup();
+		DS_PointBlue3.cleanup();
+		DS_PointBlue4.cleanup();
+		DS_PointBlue5.cleanup();
 
 		P1.cleanup();
 		DS_global.cleanup();
@@ -282,6 +372,112 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Ground.indices.size()), 1, 0, 0, 0);
+
+
+		//PointCounter buffer initialization
+
+		VkBuffer vertexBuffers_PointCounter[] = { M_PointCounter.vertexBuffer };
+		VkDeviceSize offsets_PointCounter[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_PointCounter, offsets_PointCounter);
+		vkCmdBindIndexBuffer(commandBuffer, M_PointCounter.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		//PointCounter1
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointCounter1.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_PointCounter.indices.size()), 1, 0, 0, 0);
+		//PointCounter2
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointCounter2.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_PointCounter.indices.size()), 1, 0, 0, 0);
+
+
+		//Point buffer initialization
+
+		VkBuffer vertexBuffers_Point[] = { M_Point.vertexBuffer };
+		VkDeviceSize offsets_Point[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Point, offsets_Point);
+		vkCmdBindIndexBuffer(commandBuffer, M_Point.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		//PointRed1
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointRed1.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointRed2
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointRed2.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointRed3
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointRed3.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointRed4
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointRed4.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointRed5
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointRed5.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
+
+
+		//PointBlue1
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointBlue1.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointBlue2
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointBlue2.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointBlue3
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointBlue3.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointBlue4
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointBlue4.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+		//PointBlue5
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_PointBlue5.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 	}
 
 
@@ -516,6 +712,91 @@ class MyProject : public BaseProject {
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage]);
+
+
+		//For the PointCounter1
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.0f));
+
+		vkMapMemory(device, DS_PointCounter1.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointCounter1.uniformBuffersMemory[0][currentImage]);
+
+
+		//For the PointCounter2
+		ubo.model = glm::mat4(1.0f)* glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, 0.0f));
+
+		vkMapMemory(device, DS_PointCounter2.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointCounter2.uniformBuffersMemory[0][currentImage]);
+
+
+		//For the PointRed1
+		ubo.model = glm::mat4(1.0f) *glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.05f));
+		vkMapMemory(device, DS_PointRed1.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointRed1.uniformBuffersMemory[0][currentImage]);
+		//For the PointRed2
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.08f));
+		vkMapMemory(device, DS_PointRed2.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointRed2.uniformBuffersMemory[0][currentImage]);
+		//For the PointRed3
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.11f));
+		vkMapMemory(device, DS_PointRed3.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointRed3.uniformBuffersMemory[0][currentImage]);
+		//For the PointRed4
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.14f));
+		vkMapMemory(device, DS_PointRed4.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointRed4.uniformBuffersMemory[0][currentImage]);
+		//For the PointRed5
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.17f));
+		vkMapMemory(device, DS_PointRed5.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointRed5.uniformBuffersMemory[0][currentImage]);
+
+
+		//For the PointBlue1
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.05f));
+		vkMapMemory(device, DS_PointBlue1.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointBlue1.uniformBuffersMemory[0][currentImage]);
+		//For the PointBlue2
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.08f));
+		vkMapMemory(device, DS_PointBlue2.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointBlue2.uniformBuffersMemory[0][currentImage]);
+		//For the PointBlue3
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.11f));
+		vkMapMemory(device, DS_PointBlue3.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointBlue3.uniformBuffersMemory[0][currentImage]);
+		//For the PointBlue4
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.14f));
+		vkMapMemory(device, DS_PointBlue4.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointBlue4.uniformBuffersMemory[0][currentImage]);
+		//For the PointBlue5
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.17f));
+		vkMapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage]);
+
+
+
 	}	
 };
 
