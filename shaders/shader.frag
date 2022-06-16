@@ -7,6 +7,7 @@ layout(set = 0, binding = 0) uniform globalUniformBufferObject {
 	vec3 lightPos;
 	vec3 lightColor;
 	vec4 lightParams;
+	float gamma;
 	vec3 eyePos;
 } gubo;
 
@@ -24,6 +25,7 @@ layout(location = 0) out vec4 outColor;
 • vec3 lightPos -> the position of the light.
 • vec3 lightColor -> the basic color of the light.
 • vec4 lightParams -> the other parameters of the spot light.
+• float gamma -> specular power.
 • vec3 eyePos -> the position of the viewer.
 The members of lightParams are the following:
 • lightParams.x -> a float component containing the cosine of the inner angle.
@@ -111,7 +113,7 @@ void main() {
 	//Ambient color
 	vec3 AmbCol = texture(texSampler, fragTexCoord).rgb;
 	//Specular power 
-	float gamma =  10.0f;
+	float gamma =  gubo.gamma;
 
 	//Light model
 	vec3 Lspot1 = spot_light_color(

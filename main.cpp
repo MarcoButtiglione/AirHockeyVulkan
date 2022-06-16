@@ -8,11 +8,11 @@
 struct globalUniformBufferObject {
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
-	//aggiunte per la luce
 	alignas(16) glm::vec3 lightDir;
 	alignas(16) glm::vec3 lightPos;
 	alignas(16) glm::vec3 lightColor;
 	alignas(16) glm::vec4 lightParams;
+	alignas(16) float gamma;
 	alignas(16) glm::vec3 eyePos;
 };
 struct UniformBufferObject {
@@ -687,6 +687,7 @@ class MyProject : public BaseProject {
 		gubo.lightParams = glm::vec4(
 			cos(glm::radians(0.0f)), cos(glm::radians(25.0f)), 2.0f, 1.8f
 		);
+		gubo.gamma = 50.0f;
 		
 		
 		//TO SEE
