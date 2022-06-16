@@ -104,8 +104,8 @@ void Disk::checkTableCollision(float deltaT) {
 	float maxdistance=0.165;
 
 
-	//Edge and door collision control
 	
+	//General check for the upper and lower bound of the table
 		if (posDisk.y - radiusDisk + speedDisk.y * deltaT <= -widthTable / 2 || posDisk.y + radiusDisk + speedDisk.y * deltaT >= widthTable / 2) {
 			speedDisk.y = -speedDisk.y;
 		}
@@ -113,7 +113,7 @@ void Disk::checkTableCollision(float deltaT) {
 		if (posDisk.y - radiusDisk + speedDisk.y * deltaT >= (-widthTable / 2) + cut &&
 			posDisk.y + radiusDisk + speedDisk.y * deltaT <= (widthTable / 2) - cut)
 		{	//DOOR COLLISION CASE
-			if (posDisk.x + speedDisk.x * deltaT <= (- lengthTable / 2)-0.04) //possibile problema
+			if (posDisk.x + speedDisk.x * deltaT <= (- lengthTable / 2)-0.04) 
 			{
 				//WIN BLUE
 				posDisk = glm::vec2(-0.3f, 0.0f);
