@@ -368,7 +368,7 @@ class MyProject : public BaseProject {
 			}
 		}
 		if (view == 0) {
-			gubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 4.0f),
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f));
 			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
@@ -432,11 +432,11 @@ class MyProject : public BaseProject {
 
 		//Adding part for illumination in shader
 
-		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f)*0.3f;
+		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f)*0.2f;
 		gubo.lightDir = glm::vec3(cos(glm::radians(90.0f)) * cos(glm::radians(0.0f)), sin(glm::radians(90.0f)), cos(glm::radians(90.0f)) * sin(glm::radians(0.0f)));
 		gubo.lightPos = glm::vec3(0.0, 1.0, 0.0);
 		gubo.lightParams = glm::vec4(
-			cos(glm::radians(10.5f)), cos(glm::radians(25.0f)), 2.0f, 1.8f
+			cos(glm::radians(0.0f)), cos(glm::radians(25.0f)), 2.0f, 1.8f
 		);
 		
 		
