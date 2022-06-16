@@ -47,6 +47,10 @@ class MyProject : public BaseProject {
 	Texture T_Paddle2;
 	DescriptorSet DS_Paddle2;   //Second instance of the paddle
 	
+	Model M_Ground;
+	Texture T_Ground;
+	DescriptorSet DS_Ground;	
+
 	// Instance DS global
 	DescriptorSet DS_global;	//instance of DSLglobal
 
@@ -75,12 +79,12 @@ class MyProject : public BaseProject {
 		windowWidth = 1920;
 		windowHeight = 1080;
 		windowTitle = "Air Hockey";
-		initialBackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
+		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 		
 		// Descriptor pool sizes
-		uniformBlocksInPool = 5;
-		texturesInPool = 4;
-		setsInPool = 5;
+		uniformBlocksInPool = 6;
+		texturesInPool = 5;
+		setsInPool = 6;
 
 	}
 	
@@ -141,6 +145,13 @@ class MyProject : public BaseProject {
 						{1, TEXTURE, 0, &T_Paddle2}
 			});
 
+		M_Ground.init(this, "models/ground.obj");
+		T_Ground.init(this, "textures/ground.png");
+		DS_Ground.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Ground}
+			});
+
 		//DS initialization
 		DS_global.init(this, &DSLglobal, {
 						{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr},
@@ -177,6 +188,10 @@ class MyProject : public BaseProject {
 
 		DS_Paddle2.cleanup();
 		T_Paddle2.cleanup();
+
+		DS_Ground.cleanup();
+		T_Ground.cleanup();
+		M_Ground.cleanup();
 
 		P1.cleanup();
 		DS_global.cleanup();
@@ -253,6 +268,20 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Paddle.indices.size()), 1, 0, 0, 0);
 
+
+		//Ground buffer initialization
+
+		VkBuffer vertexBuffers_Ground[] = { M_Ground.vertexBuffer };
+		VkDeviceSize offsets_Ground[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Ground, offsets_Ground);
+		vkCmdBindIndexBuffer(commandBuffer, M_Ground.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_Ground.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Ground.indices.size()), 1, 0, 0, 0);
 	}
 
 
@@ -350,10 +379,10 @@ class MyProject : public BaseProject {
 			}
 		}
 		if (view == 0) {
-			gubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 4.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f));
-			
+			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
 		}
 		else if (view == 1)
 		{
@@ -368,6 +397,8 @@ class MyProject : public BaseProject {
 			m_change = -mx_p2;
 			mx_p2 = mz_p2;
 			mz_p2 = m_change;
+
+			gubo.eyePos = glm::vec3(-1.5f, 0.5f, 0.0f);
 
 		}
 		else if (view == 2)
@@ -384,6 +415,7 @@ class MyProject : public BaseProject {
 			mx_p2 = -mz_p2;
 			mz_p2 = m_change;
 
+			gubo.eyePos = glm::vec3(1.5f, 0.5f, 0.0f);
 		}
 
 		
@@ -411,13 +443,13 @@ class MyProject : public BaseProject {
 
 		//Adding part for illumination in shader
 
-		gubo.lightColor = glm::vec3(1.0f, 0.0f, 0.0f);
-		gubo.lightDir = glm::vec3(cos(glm::radians(135.0f)) * cos(glm::radians(-30.0f)), sin(glm::radians(135.0f)), cos(glm::radians(135.0f)) * sin(glm::radians(-30.0f)));
-		gubo.lightPos = glm::vec3(-3.0, 3.0, 1.0);
+		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f)*0.3f;
+		gubo.lightDir = glm::vec3(cos(glm::radians(90.0f)) * cos(glm::radians(0.0f)), sin(glm::radians(90.0f)), cos(glm::radians(90.0f)) * sin(glm::radians(0.0f)));
+		gubo.lightPos = glm::vec3(0.0, 1.0, 0.0);
 		gubo.lightParams = glm::vec4(
-			cos(glm::radians(22.5f)), cos(glm::radians(30.0f)), 1.0, 1.8f
+			cos(glm::radians(10.5f)), cos(glm::radians(25.0f)), 2.0f, 1.8f
 		);
-		gubo.eyePos = glm::vec3(0.0f, 1.0f, 0.0f);
+		
 		
 		//TO SEE
 
@@ -476,6 +508,14 @@ class MyProject : public BaseProject {
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage]);
+
+		//For the ground
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.7f, 0.0f));
+
+		vkMapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage]);
 	}	
 };
 
