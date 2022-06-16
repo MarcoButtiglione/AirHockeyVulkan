@@ -32,10 +32,10 @@ void Disk::setSpeed(glm::vec2 speed)
 	speedDisk = speed;
 }
 
-void Disk::updateDisk(float deltaT, glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2)
+int Disk::updateDisk(float deltaT, glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2)
 {
 	checkPaddleCollision(deltaT,posPaddle1, posPaddle2, speedPaddle1, speedPaddle2);
-	checkTableCollision(deltaT);
+	int status = checkTableCollision(deltaT);
 
 
 	posDisk += speedDisk * deltaT;
@@ -54,7 +54,7 @@ void Disk::updateDisk(float deltaT, glm::vec2 posPaddle1, glm::vec2 posPaddle2, 
 	{
 		speedDisk.y += 0.1f * deltaT;
 	}
-
+	return status;
 };
 void Disk::checkPaddleCollision(float deltaT, glm::vec2 posPaddle1, glm::vec2 posPaddle2, glm::vec2 speedPaddle1, glm::vec2 speedPaddle2) {
 
@@ -98,7 +98,7 @@ void Disk::checkPaddleCollision(float deltaT, glm::vec2 posPaddle1, glm::vec2 po
 
 
 };
-void Disk::checkTableCollision(float deltaT) {
+int Disk::checkTableCollision(float deltaT) {
 
 	float cut=0.2;
 	float maxdistance=0.165;
@@ -118,14 +118,14 @@ void Disk::checkTableCollision(float deltaT) {
 				//WIN BLUE
 				posDisk = glm::vec2(-0.3f, 0.0f);
 				speedDisk = glm::vec2(0.0f, 0.0f);
-				std::cout << "WIN BLUE";
+				return 1;
 			}
 			if (posDisk.x + speedDisk.x * deltaT >= (lengthTable / 2)+0.04) 
 			{
 				//WIN RED
 				posDisk = glm::vec2(0.3f, 0.0f);
 				speedDisk = glm::vec2(0.0f, 0.0f);
-				std::cout << "WIN RED";
+				return 2;
 			}
 		}
 		else {
@@ -147,7 +147,7 @@ void Disk::checkTableCollision(float deltaT) {
 				glm::vec2 vCollisionC0Norm = glm::normalize(vCollisionC0);
 				float speed1 = dot(speedDisk, vCollisionC0Norm);
 				if (speed1 < 0) {
-					return;
+					return 0;
 				}
 				speedDisk = -speed1 * vCollisionC0Norm;
 			}
@@ -158,7 +158,7 @@ void Disk::checkTableCollision(float deltaT) {
 				glm::vec2 vCollisionC1Norm = glm::normalize(vCollisionC1);
 				float speed1 = dot(speedDisk, vCollisionC1Norm);
 				if (speed1 < 0) {
-					return;
+					return 0;
 				}
 				speedDisk = -speed1 * vCollisionC1Norm;
 			}
@@ -169,7 +169,7 @@ void Disk::checkTableCollision(float deltaT) {
 				glm::vec2 vCollisionC2Norm = glm::normalize(vCollisionC2);
 				float speed1 = dot(speedDisk, vCollisionC2Norm);
 				if (speed1 < 0) {
-					return;
+					return 0;
 				}
 				speedDisk = -speed1 * vCollisionC2Norm;
 			}
@@ -180,18 +180,10 @@ void Disk::checkTableCollision(float deltaT) {
 				glm::vec2 vCollisionC3Norm = glm::normalize(vCollisionC3);
 				float speed1 = dot(speedDisk, vCollisionC3Norm);
 				if (speed1 < 0) {
-					return;
+					return 0;
 				}
 				speedDisk = -speed1 * vCollisionC3Norm;
 			}
 		}
-	
-
-
-	/*
-	if (posDisk[0] - radiusDisk + speedDisk[0] * deltaT < -lengthTable / 2 || posDisk[0] + radiusDisk + speedDisk[0] * deltaT> lengthTable / 2) {
-		speedDisk[0] = -speedDisk[0];
-	}
-	*/
-	
+		return 0;
 };

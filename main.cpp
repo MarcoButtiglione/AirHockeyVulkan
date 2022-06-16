@@ -89,8 +89,9 @@ class MyProject : public BaseProject {
 	float move_speed_paddles = 1.15;
 	Disk disk = Disk::Disk(startingPosDisk, startingSpeedDisk, radiusDisk, radiusPaddle, widthTable, lengthTable);
 	
+	int pointRed = 0;
+	int pointBlue = 0;
 
-	
 	// Here you set the main application parameters
 	void setWindowParameters() {
 		// window size, titile and initial background
@@ -481,6 +482,33 @@ class MyProject : public BaseProject {
 	}
 
 
+	void goalRed() {
+		if (pointRed == 5) {
+			pointRed = 0;
+		}
+		else
+		{
+			pointRed++;
+		}
+		
+		Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
+		Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
+	}
+
+	void goalBlue() {
+		if (pointBlue == 5) {
+			pointBlue = 0;
+		}
+		else {
+			pointBlue++;
+		}
+		
+		Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
+		Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
+	}
+
+
+
 	// Here is where you update the uniforms.
 	// Very likely this will be where you will be writing the logic of your application.
 	void updateUniformBuffer(uint32_t currentImage) {
@@ -617,8 +645,22 @@ class MyProject : public BaseProject {
 		
 
 		//Disk
-		disk.updateDisk(deltaT, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
+		//Status:
+		//0: nothing
+		//1: goal Blue
+		//2: goal Red
+		int status = disk.updateDisk(deltaT, glm::vec2(Pos_p1.x, Pos_p1.z), glm::vec2(Pos_p2.x, Pos_p2.z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
 
+		switch (status) {
+		case 0:
+			break;
+		case 1:
+			goalBlue();
+			break;
+		case 2:
+			goalRed();
+			break;
+		}
 		
 		//POSITION UPDATE FOR PADDLES
 		
@@ -713,6 +755,75 @@ class MyProject : public BaseProject {
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage]);
 
+		float deltaTransPoint = 0.22;
+		int moveRed1 = 0;
+		int moveRed2 = 0;
+		int moveRed3 = 0;
+		int moveRed4 = 0;
+		int moveRed5 = 0;
+
+		switch (pointRed) {
+		case 1:
+			moveRed1 = 1;
+			break;
+		case 2:
+			moveRed1 = 1;
+			moveRed2 = 1;
+			break;
+		case 3:
+			moveRed1 = 1;
+			moveRed2 = 1;
+			moveRed3 = 1;
+			break;
+		case 4:
+			moveRed1 = 1;
+			moveRed2 = 1;
+			moveRed3 = 1;
+			moveRed4 = 1;
+			break;
+		case 5:
+			moveRed1 = 1;
+			moveRed2 = 1;
+			moveRed3 = 1;
+			moveRed4 = 1;
+			moveRed5 = 1;
+			break;
+		}
+
+		int moveBlue1 = 0;
+		int moveBlue2 = 0;
+		int moveBlue3 = 0;
+		int moveBlue4 = 0;
+		int moveBlue5 = 0;
+
+		switch (pointBlue) {
+		case 1:
+			moveBlue1 = 1;
+			break;
+		case 2:
+			moveBlue1 = 1;
+			moveBlue2 = 1;
+			break;
+		case 3:
+			moveBlue1 = 1;
+			moveBlue2 = 1;
+			moveBlue3 = 1;
+			break;
+		case 4:
+			moveBlue1 = 1;
+			moveBlue2 = 1;
+			moveBlue3 = 1;
+			moveBlue4 = 1;
+			break;
+		case 5:
+			moveBlue1 = 1;
+			moveBlue2 = 1;
+			moveBlue3 = 1;
+			moveBlue4 = 1;
+			moveBlue5 = 1;
+			break;
+		}
+
 
 		//For the PointCounter1
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.0f));
@@ -733,31 +844,31 @@ class MyProject : public BaseProject {
 
 
 		//For the PointRed1
-		ubo.model = glm::mat4(1.0f) *glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.05f));
+		ubo.model = glm::mat4(1.0f) *glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.05f-moveRed1*deltaTransPoint));
 		vkMapMemory(device, DS_PointRed1.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed1.uniformBuffersMemory[0][currentImage]);
 		//For the PointRed2
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.08f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.08f - moveRed2 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed2.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed2.uniformBuffersMemory[0][currentImage]);
 		//For the PointRed3
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.11f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.11f - moveRed3 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed3.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed3.uniformBuffersMemory[0][currentImage]);
 		//For the PointRed4
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.14f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.14f - moveRed4 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed4.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed4.uniformBuffersMemory[0][currentImage]);
 		//For the PointRed5
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.17f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.17f - moveRed5 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed5.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
@@ -765,31 +876,31 @@ class MyProject : public BaseProject {
 
 
 		//For the PointBlue1
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.05f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.05f+moveBlue1 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue1.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue1.uniformBuffersMemory[0][currentImage]);
 		//For the PointBlue2
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.08f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.08f + moveBlue2 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue2.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue2.uniformBuffersMemory[0][currentImage]);
 		//For the PointBlue3
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.11f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.11f + moveBlue3 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue3.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue3.uniformBuffersMemory[0][currentImage]);
 		//For the PointBlue4
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.14f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.14f + moveBlue4 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue4.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue4.uniformBuffersMemory[0][currentImage]);
 		//For the PointBlue5
-		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.17f));
+		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.17f + moveBlue5 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
