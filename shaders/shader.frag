@@ -127,7 +127,7 @@ void main() {
 	vec3 Lspot2 = spot_light_color(
 		gubo.lightColor,
 		gubo.lightParams.w,
-		gubo.lightPos+vec3(-0.5f,0.0f,0.0f),
+		gubo.lightPos+vec3(-0.55f,0.0f,0.0f),
 		fragPos,
 		gubo.lightParams.z,
 		gubo.lightDir,
@@ -137,7 +137,7 @@ void main() {
 	vec3 Lspot3 = spot_light_color(
 		gubo.lightColor,
 		gubo.lightParams.w,
-		gubo.lightPos+vec3(0.5f,0.0f,0.0f),
+		gubo.lightPos+vec3(0.55f,0.0f,0.0f),
 		fragPos,
 		gubo.lightParams.z,
 		gubo.lightDir,
@@ -151,11 +151,11 @@ void main() {
 		fragPos
 	);
 	vec3 lx2 = spot_light_dir(
-		gubo.lightPos+vec3(-0.5f,0.0f,0.0f),
+		gubo.lightPos+vec3(-0.55f,0.0f,0.0f),
 		fragPos
 	);
 	vec3 lx3 = spot_light_dir(
-		gubo.lightPos+vec3(0.5f,0.0f,0.0f),
+		gubo.lightPos+vec3(0.55f,0.0f,0.0f),
 		fragPos
 	);
 	
