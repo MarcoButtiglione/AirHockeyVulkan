@@ -236,7 +236,8 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle2}
 			});
-		//Starting interface
+
+		//Menu
 		M_Menu.init(this, "models/ground.obj");
 		T_Menu.init(this, "textures/menu.png");
 		DS_Menu.init(this, &DSLobj, {
@@ -520,7 +521,7 @@ class MyProject : public BaseProject {
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 
 
-		//Starting Menu
+		//Menu
 		VkBuffer vertexBuffers_Menu[] = { M_Menu.vertexBuffer };
 		VkDeviceSize offsets_Menu[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Menu, offsets_Menu);
@@ -1049,7 +1050,7 @@ class MyProject : public BaseProject {
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage]);
 
-		//Starting Menu
+		//Menu
 		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f))*
 			glm::rotate(glm::mat4(1.0), glm::radians(180.0f), glm::vec3(0, 1, 0))*
 			glm::scale(glm::mat4(1.0),glm::vec3(0.8f, 0.5f, 0.4f));
