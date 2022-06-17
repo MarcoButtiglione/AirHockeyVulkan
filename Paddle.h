@@ -18,14 +18,19 @@ private:
 	float speed;
 
 public:
+	
 	Paddle(glm::vec3 pos, float radDisk, float radPaddle, float widthTab, float lengthTab,float speedP);
+	
 	glm::vec3 getPos();
+	
 	void setPos(glm::vec3 pos);
+	
 	void setSpeed(float speedP);
 	
 	void updatespeed(int check,float T);
 
 	void updatePaddle1(float deltaT, float mx, float mz);
+	
 	void updatePaddle2(float deltaT, float mx, float mz);
 	
 

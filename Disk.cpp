@@ -99,21 +99,22 @@ void Disk::checkPaddleCollision(float deltaT, glm::vec2 posPaddle1, glm::vec2 po
 
 };
 int Disk::checkTableCollision(float deltaT) {
+		//Cutting the table length by "cut"
+		float cut=0.2;
+		//Max distance between center of the disk and edgepoint
+		float maxdistance=0.165;
 
-	float cut=0.2;
-	float maxdistance=0.165;
-
-
-	
-	//General check for the upper and lower bound of the table
+	    //General check for the upper and lower bound of the table
 		if (posDisk.y - radiusDisk + speedDisk.y * deltaT <= -widthTable / 2 || posDisk.y + radiusDisk + speedDisk.y * deltaT >= widthTable / 2) {
 			speedDisk.y = -speedDisk.y;
 		}
-		//2ND half of the table case (also including intersection)
+
+		//Specific check for the part of the table including the door and the angles
 		if (posDisk.y - radiusDisk + speedDisk.y * deltaT >= (-widthTable / 2) + cut &&
 			posDisk.y + radiusDisk + speedDisk.y * deltaT <= (widthTable / 2) - cut)
-		{	//DOOR COLLISION CASE
-			if (posDisk.x + speedDisk.x * deltaT <= (- lengthTable / 2)-0.04) 
+		{	
+			    //DOOR COLLISION CASE
+			    if (posDisk.x + speedDisk.x * deltaT <= (- lengthTable / 2)-0.04) 
 			{
 				//WIN BLUE
 				posDisk = glm::vec2(-0.3f, 0.0f);

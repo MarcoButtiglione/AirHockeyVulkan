@@ -32,7 +32,7 @@ class MyProject : public BaseProject {
 	//Table
 	Model M_Table;
 	Texture T_Table;
-	DescriptorSet DS_Table;	
+	DescriptorSet DS_Table;
 	//Disk
 	Model M_Disk;
 	Texture T_Disk;
@@ -40,9 +40,9 @@ class MyProject : public BaseProject {
 	//Paddle red and blue (Multiple Descriptor Sets, single model but multiple objects)
 	Model M_Paddle;
 	Texture T_Paddle1;
-	DescriptorSet DS_Paddle1;		
+	DescriptorSet DS_Paddle1;
 	Texture T_Paddle2;
-	DescriptorSet DS_Paddle2;   
+	DescriptorSet DS_Paddle2;
 	//Ground
 	Model M_Ground;
 	Texture T_Ground;
@@ -71,18 +71,18 @@ class MyProject : public BaseProject {
 	DescriptorSet DS_Menu;
 
 	// Instance DS global
-	DescriptorSet DS_global;	
+	DescriptorSet DS_global;
 
 	globalUniformBufferObject gubo{};
 
 	//Game variables
-	
+
 	//Model dimensions
 	float radiusDisk = 0.029;
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014 - 2 * 0.052;
 	float lengthTable = 1.893 - 2 * 0.068;
-	
+
 	//Types of camera angle
 	int view=3;
 
@@ -103,7 +103,7 @@ class MyProject : public BaseProject {
 	glm::vec4 switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 	float radiusSpotLight = 40.0f;
 
-	
+
 	void setWindowParameters() {
 		// window size, titile and initial background
 		windowWidth = 1920;
@@ -138,7 +138,7 @@ class MyProject : public BaseProject {
 		// be used in this pipeline. The first element will be set 0, and so on..
 		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSLglobal, &DSLobj});
 
-		// Models, textures and Descriptors 
+		// Models, textures and Descriptors
 
 		//Table
 		M_Table.init(this, "models/table.obj");
@@ -152,7 +152,7 @@ class MyProject : public BaseProject {
 					{1, TEXTURE, 0, &T_Table}
 				});
 
-		//Disk 
+		//Disk
 		M_Disk.init(this, "models/disk.obj");
 		T_Disk.init(this, "textures/disk.png");
 		DS_Disk.init(this, &DSLobj, {
@@ -179,7 +179,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Ground}
 			});
-		
+
 		//Point Counters
 		M_PointCounter.init(this, "models/point_counter.obj");
 		T_PointCounter.init(this, "textures/point_counter.png");
@@ -198,12 +198,12 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
 			});
-		
+
 		DS_PointRed2.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
 			});
-		
+
 		DS_PointRed3.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
@@ -281,7 +281,7 @@ class MyProject : public BaseProject {
 		 T_Ground.cleanup();
 		 M_Ground.cleanup();
 
-		
+
 		 M_PointCounter.cleanup();
 		 T_PointCounter.cleanup();
 		 DS_PointCounter1.cleanup();
@@ -304,7 +304,7 @@ class MyProject : public BaseProject {
 		T_Menu.cleanup();
 		M_Menu.cleanup();
 
-		
+
 
 		 P1.cleanup();
 		 DS_global.cleanup();
@@ -314,7 +314,7 @@ class MyProject : public BaseProject {
 	}
 
 	// Here it is the creation of the command buffer:
-	// You send to the GPU all the objects 
+	// You send to the GPU all the objects
 	void populateCommandBuffer(VkCommandBuffer commandBuffer, int currentImage) {
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -399,7 +399,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Ground.indices.size()), 1, 0, 0, 0);
 
-		
+
 		//PointCounter buffer initialization
 
 		VkBuffer vertexBuffers_PointCounter[] = { M_PointCounter.vertexBuffer };
@@ -515,7 +515,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
-			
+
 
 		//Starting Menu
 		VkBuffer vertexBuffers_Menu[] = { M_Menu.vertexBuffer };
@@ -564,7 +564,7 @@ class MyProject : public BaseProject {
 	// Very likely this will be where you will be writing the logic of your application.
 	void updateUniformBuffer(uint32_t currentImage) {
 
-		//First part to use for translations
+		//Time variables
 
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		static float lastTime = 0.0f;
@@ -580,7 +580,7 @@ class MyProject : public BaseProject {
 
 
 
-	//VAR FOR INPUT MANAGEMENT
+	    //variables for input management
 
 		float static yaw_p1 = 0.0f, pitch_p1 = 0.0f, roll_p1;
 		float static yaw_p2 = 0.0f, pitch_p2 = 0.0f, roll_p2;
@@ -589,8 +589,9 @@ class MyProject : public BaseProject {
 		float m_change;
 
 
-	//INPUT MANAGEMENT
-		//Paddle1
+	    //inputs capture
+
+		//paddle1
 		if (glfwGetKey(window, GLFW_KEY_D)) {
 			mx_p1 = 1;
 			roll_p1 = 0.0f;
@@ -608,7 +609,7 @@ class MyProject : public BaseProject {
 			roll_p1 = -90.0f + 45.0f * mx_p1;
 		}
 
-		//Paddle2
+		//paddle2
 		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
 			mx_p2 = 1;
 			roll_p2 = 0.0f;
@@ -626,7 +627,7 @@ class MyProject : public BaseProject {
 			roll_p2 = -90.0f + 45.0f * mx_p2;
 		}
 
-		//Management input
+		//utility input
 		if (glfwGetKey(window, GLFW_KEY_Q)) {
 			paddle1.updatespeed(1,deltaT);
 			paddle2.updatespeed(1, deltaT);
@@ -647,7 +648,6 @@ class MyProject : public BaseProject {
 				paddle2.setSpeed(1.15);
 				debounce = time;
 				switchLight = glm::vec4(1.0f, 1.0f, 1.0f,0.0f);
-				
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
@@ -659,8 +659,8 @@ class MyProject : public BaseProject {
 				{
 					switchLight = switchLight - glm::vec4(0.0f, 1.0f, 0.0f,0.0f);
 				}
-				
-				
+
+
 				debounce = time;
 
 			}
@@ -694,7 +694,7 @@ class MyProject : public BaseProject {
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_O)) {
-		
+
 			if (radiusSpotLight >= 10.0f){
 				radiusSpotLight -= 20.0 * deltaT;
 				return;
@@ -722,7 +722,7 @@ class MyProject : public BaseProject {
 				}
 				
 				debounce = time;
-				
+
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
@@ -730,7 +730,7 @@ class MyProject : public BaseProject {
 				view=3;
 				switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 				debounce = time;
-				
+
 			}
 		}
 
@@ -741,7 +741,7 @@ class MyProject : public BaseProject {
 
 
 
-	//VIEW CHANGING
+	    //change of camera view
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
@@ -801,7 +801,7 @@ class MyProject : public BaseProject {
 
 
 
-		//Disk
+		//Disk update
 		int status = disk.updateDisk(deltaT, glm::vec2(paddle1.getPos().x, paddle1.getPos().z), glm::vec2(paddle2.getPos().x, paddle2.getPos().z), glm::vec2(mx_p1, -mz_p1), glm::vec2(mx_p2, -mz_p2));
 
 		switch (status) {
@@ -815,7 +815,7 @@ class MyProject : public BaseProject {
 			break;
 		}
 
-		//POSITION UPDATE FOR PADDLES
+		//Paddles update
 		paddle1.updatePaddle1(deltaT,mx_p1,mz_p1);
 		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
 
@@ -831,7 +831,7 @@ class MyProject : public BaseProject {
 		gubo.switchLight = switchLight;
 		gubo.gamma = 50.0f;
 
-		
+
 
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
@@ -839,54 +839,50 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_global.uniformBuffersMemory[0][currentImage]);
 
 
-		//For the table
+		//Table
 		ubo.model = glm::mat4(1.0f);
 
-		// Here is where you actually update your uniforms
+
 		vkMapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage], 0,
 							sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage]);
 
 
-		//For the disk
+		//Disk
 		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(disk.getPos().x, 0.0f, disk.getPos().y));
 
-		// Here is where you actually update your uniforms
+
 		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
 
-		//For the first paddle
+		//First paddle
 		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle1.getPos().x, paddle1.getPos().y, paddle1.getPos().z)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(roll_p1), glm::vec3(0, 1, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p1), glm::vec3(1, 0, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1));
 
-		// Here is where you actually update your uniforms
+
 		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage]);
 
-		//For the second paddle
+		//Second paddle
 		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle2.getPos().x, paddle2.getPos().y, paddle2.getPos().z)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(roll_p2), glm::vec3(0, 1, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p2), glm::vec3(1, 0, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1));
 
 
-
-
-
-		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage]);
 
-		//For the ground
+		//Ground
 		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.7f, 0.0f));
 
 		vkMapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage], 0,
@@ -894,6 +890,8 @@ class MyProject : public BaseProject {
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage]);
 
+
+		//Management of points translations
 		float deltaTransPoint = 0.22;
 		int moveRed1 = 0;
 		int moveRed2 = 0;
@@ -963,11 +961,8 @@ class MyProject : public BaseProject {
 			break;
 		}
 
-		
-		
-		
-		
-		//For the PointCounter1
+
+		//PointCounter1
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.0f));
 
 		vkMapMemory(device, DS_PointCounter1.uniformBuffersMemory[0][currentImage], 0,
@@ -976,7 +971,7 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_PointCounter1.uniformBuffersMemory[0][currentImage]);
 
 
-		//For the PointCounter2
+		//PointCounter2
 		ubo.model = glm::mat4(1.0f)* glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, 0.0f));
 
 		vkMapMemory(device, DS_PointCounter2.uniformBuffersMemory[0][currentImage], 0,
@@ -985,31 +980,35 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_PointCounter2.uniformBuffersMemory[0][currentImage]);
 
 
-		//For the PointRed1
+		//PointRed1
 		ubo.model = glm::mat4(1.0f) *glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.05f-moveRed1*deltaTransPoint));
 		vkMapMemory(device, DS_PointRed1.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed1.uniformBuffersMemory[0][currentImage]);
-		//For the PointRed2
+
+		//PointRed2
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.08f - moveRed2 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed2.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed2.uniformBuffersMemory[0][currentImage]);
-		//For the PointRed3
+
+		//PointRed3
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.11f - moveRed3 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed3.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed3.uniformBuffersMemory[0][currentImage]);
-		//For the PointRed4
+
+		//PointRed4
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.14f - moveRed4 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed4.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointRed4.uniformBuffersMemory[0][currentImage]);
-		//For the PointRed5
+
+		//PointRed5
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.17f - moveRed5 * deltaTransPoint));
 		vkMapMemory(device, DS_PointRed5.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
@@ -1017,31 +1016,35 @@ class MyProject : public BaseProject {
 		vkUnmapMemory(device, DS_PointRed5.uniformBuffersMemory[0][currentImage]);
 
 
-		//For the PointBlue1
+		//PointBlue1
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.05f+moveBlue1 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue1.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue1.uniformBuffersMemory[0][currentImage]);
-		//For the PointBlue2
+
+		//PointBlue2
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.08f + moveBlue2 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue2.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue2.uniformBuffersMemory[0][currentImage]);
-		//For the PointBlue3
+
+		//PointBlue3
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.11f + moveBlue3 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue3.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue3.uniformBuffersMemory[0][currentImage]);
-		//For the PointBlue4
+
+		//PointBlue4
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.14f + moveBlue4 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue4.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue4.uniformBuffersMemory[0][currentImage]);
-		//For the PointBlue5
+
+		//PointBlue5
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.9f, 0.0f, -0.17f + moveBlue5 * deltaTransPoint));
 		vkMapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
@@ -1062,9 +1065,6 @@ class MyProject : public BaseProject {
 };
 
 
-
-
-// This is the main: probably you do not need to touch this!
 int main() {
     MyProject app;
 
