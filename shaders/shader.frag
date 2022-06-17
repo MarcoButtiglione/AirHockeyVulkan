@@ -8,7 +8,7 @@ layout(set = 0, binding = 0) uniform globalUniformBufferObject {
 	vec3 lightColor;
 	vec4 lightParams;
 	float gamma;
-	vec3 switchLight;
+	vec4 switchLight;
 	vec3 eyePos;
 } gubo;
 
@@ -117,8 +117,11 @@ void main() {
 	float gamma =  gubo.gamma;
 
 	//Light model
+	vec3 L_directional = gubo.lightColor;
+	vec3 lx_directional = gubo.lightDir;
+
 	vec3 Lspot1 = spot_light_color(
-		gubo.lightColor,
+		gubo.lightColor*0.2f,
 		gubo.lightParams.w,
 		gubo.lightPos,
 		fragPos,
@@ -128,7 +131,7 @@ void main() {
 		gubo.lightParams.x
 	);
 	vec3 Lspot2 = spot_light_color(
-		gubo.lightColor,
+		gubo.lightColor*0.2f,
 		gubo.lightParams.w,
 		gubo.lightPos+vec3(-0.55f,0.0f,0.0f),
 		fragPos,
@@ -138,7 +141,7 @@ void main() {
 		gubo.lightParams.x
 	);
 	vec3 Lspot3 = spot_light_color(
-		gubo.lightColor,
+		gubo.lightColor*0.2f,
 		gubo.lightParams.w,
 		gubo.lightPos+vec3(0.55f,0.0f,0.0f),
 		fragPos,
@@ -164,6 +167,12 @@ void main() {
 	
 
 	//BRDF functions
+	vec3 fDiffuse_Directional = LambertReflection(
+		DifCol,
+		lx_directional,
+		Norm
+	);
+
 	vec3 fDiffuse1 = LambertReflection(
 		DifCol,
 		lx1,
@@ -205,12 +214,12 @@ void main() {
 	
 	//AmbientLighting
 	vec3 Lamb = AmbientLighting(
-		gubo.lightColor*0.2f,
+		gubo.lightColor*0.04f,
 		AmbCol
 	);
 
 	//Rendering equation
-	vec3 L = (Lspot1*(fDiffuse1+fSpecular1)*gubo.switchLight.x+Lspot2*(fDiffuse2+fSpecular2)*gubo.switchLight.y+Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z)+Lamb;
+	vec3 L = (Lspot1*(fDiffuse1+fSpecular1)*gubo.switchLight.x+Lspot2*(fDiffuse2+fSpecular2)*gubo.switchLight.y+Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z)+Lamb+(L_directional*(fDiffuse_Directional)*gubo.switchLight.w);
 
 
 	outColor = vec4(clamp(L,vec3(0.0f), vec3(1.0f)), 1.0f);	
