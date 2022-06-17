@@ -65,10 +65,16 @@ class MyProject : public BaseProject {
 	DescriptorSet DS_PointBlue4;
 	DescriptorSet DS_PointBlue5;
 
-	//Starting interface
+	//Starting menu
 	Model M_Menu;
 	Texture T_Menu;
 	DescriptorSet DS_Menu;
+	//Win Red
+	Texture T_WinRed;
+	DescriptorSet DS_WinRed;
+	//Win Blue
+	Texture T_WinBlue;
+	DescriptorSet DS_WinBlue;
 
 	// Instance DS global
 	DescriptorSet DS_global;
@@ -112,9 +118,9 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
 		// Descriptor pool sizes
-		uniformBlocksInPool = 19;
-		texturesInPool =18;
-		setsInPool = 19;
+		uniformBlocksInPool = 21;
+		texturesInPool =20;
+		setsInPool = 21;
 
 	}
 
@@ -244,6 +250,18 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Menu}
 			});
+		//Win Red
+		T_WinRed.init(this, "textures/redwin.png");
+		DS_WinRed.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_WinRed}
+			});
+		//Win Blue
+		T_WinBlue.init(this, "textures/bluewin.png");
+		DS_WinBlue.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_WinBlue}
+			});
 
 		//DS initialization
 		DS_global.init(this, &DSLglobal, {
@@ -305,6 +323,10 @@ class MyProject : public BaseProject {
 		T_Menu.cleanup();
 		M_Menu.cleanup();
 
+		T_WinRed.cleanup();
+		DS_WinRed.cleanup();
+		T_WinBlue.cleanup();
+		DS_WinBlue.cleanup();
 
 
 		 P1.cleanup();
@@ -530,6 +552,20 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
+		//Win Red
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_WinRed.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
+		//Win Blue
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_WinBlue.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
 	}
 
 
@@ -539,6 +575,7 @@ class MyProject : public BaseProject {
 		if (scoreRed == 5) {
 			scoreRed = 0;
 			scoreBlue = 0;
+			view = 4;
 		}
 		else
 		{
@@ -552,9 +589,11 @@ class MyProject : public BaseProject {
 		if (scoreBlue == 5) {
 			scoreRed = 0;
 			scoreBlue = 0;
+			view = 5;
 		}
 		else {
 			scoreBlue++;
+
 		}
 
 		paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
@@ -709,7 +748,7 @@ class MyProject : public BaseProject {
 
 		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
-				if (view == 3) {
+				if (view >= 3) {
 					scoreBlue = 0;
 					scoreRed = 0;
 					paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
@@ -746,7 +785,7 @@ class MyProject : public BaseProject {
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
-				if (view != 3) {
+				if (view < 3) {
 					view++;
 					debounce = time;
 					view = view % 3;
@@ -793,13 +832,27 @@ class MyProject : public BaseProject {
 
 			gubo.eyePos = glm::vec3(1.5f, 0.5f, 0.0f);
 		}
-		if (view == 3) {
+		else if (view == 3) {
 			gubo.view = glm::lookAt(glm::vec3(0.0f, 10.0f, 0.000000001f),
 				glm::vec3(0.0f, 0.0f, 0.0f),
 				glm::vec3(0.0f, 1.0f, 0.0f));
 			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
+			switchLight = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		}
-
+		else if (view == 4) {
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 20.0f, 0.000000001f),
+				glm::vec3(0.0f, 0.0f, 0.0f),
+				glm::vec3(0.0f, 1.0f, 0.0f));
+			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
+			switchLight = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+		else if (view == 5) {
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 30.0f, 0.000000001f),
+				glm::vec3(0.0f, 0.0f, 0.0f),
+				glm::vec3(0.0f, 1.0f, 0.0f));
+			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
+			switchLight = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		}
 
 
 		//Disk update
@@ -1061,6 +1114,26 @@ class MyProject : public BaseProject {
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_Menu.uniformBuffersMemory[0][currentImage]);
+
+		//Win Red
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 11.0f, 0.0f)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(180.0f), glm::vec3(0, 1, 0)) *
+			glm::scale(glm::mat4(1.0), glm::vec3(0.8f, 0.5f, 0.4f));
+
+		vkMapMemory(device, DS_WinRed.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_WinRed.uniformBuffersMemory[0][currentImage]);
+
+		//Win Blue
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 21.0f, 0.0f)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(180.0f), glm::vec3(0, 1, 0)) *
+			glm::scale(glm::mat4(1.0), glm::vec3(0.8f, 0.5f, 0.4f));
+
+		vkMapMemory(device, DS_WinBlue.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_WinBlue.uniformBuffersMemory[0][currentImage]);
 
 	}
 };
