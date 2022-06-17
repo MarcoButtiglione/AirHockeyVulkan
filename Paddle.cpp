@@ -67,5 +67,9 @@ void Paddle::updatePaddle2(float deltaT, float mx, float mz) {
 	
 }
 
+void Paddle::setSpeed(float speedP) {
+	speed = speedP;
+}
+
 
 
