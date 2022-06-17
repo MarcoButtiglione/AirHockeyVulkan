@@ -10,7 +10,7 @@ struct globalUniformBufferObject {
 	alignas(16) glm::vec3 lightColor;
 	alignas(16) glm::vec4 lightParams;
 	alignas(16) float gamma;
-	alignas(16) glm::vec3 switchLight;
+	alignas(16) glm::vec4 switchLight;
 	alignas(16) glm::vec3 eyePos;
 };
 
@@ -84,7 +84,7 @@ class MyProject : public BaseProject {
 	float lengthTable = 1.893 - 2 * 0.068;
 
 	//Types of camera angle
-	int view;
+	int view=3;
 
 	//Initialization of disk and paddles
 	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
@@ -100,7 +100,7 @@ class MyProject : public BaseProject {
 	int scoreBlue = 0;
 
 	//Initialization of spotlights
-	glm::vec3 switchLight = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec4 switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 	float radiusSpotLight = 40.0f;
 
 
@@ -250,10 +250,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr},
 			});
 
-		gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
-					glm::vec3(0.0f, 0.0f, 0.0f),
-					glm::vec3(0.0f, 1.0f, 0.0f));
-		view = 0;
+	
 		gubo.proj = glm::perspective(glm::radians(45.0f),
 			swapChainExtent.width / (float)swapChainExtent.height,
 			0.1f, 10.0f);
@@ -651,17 +648,17 @@ class MyProject : public BaseProject {
 				paddle1.setSpeed(1.15);
 				paddle2.setSpeed(1.15);
 				debounce = time;
-
+				switchLight = glm::vec4(1.0f, 1.0f, 1.0f,0.0f);
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (switchLight.y == 0.0f) {
-					switchLight = switchLight + glm::vec3(0.0f, 1.0f, 0.0f);
+					switchLight = switchLight + glm::vec4(0.0f, 1.0f, 0.0f,0.0f);
 				}
 				else
 				{
-					switchLight = switchLight - glm::vec3(0.0f, 1.0f, 0.0f);
+					switchLight = switchLight - glm::vec4(0.0f, 1.0f, 0.0f,0.0f);
 				}
 
 
@@ -672,11 +669,11 @@ class MyProject : public BaseProject {
 		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (switchLight.x == 0.0f) {
-					switchLight = switchLight + glm::vec3(1.0f, 0.0f, 0.0f);
+					switchLight = switchLight + glm::vec4(1.0f, 0.0f, 0.0f,0.0f);
 				}
 				else
 				{
-					switchLight = switchLight - glm::vec3(1.0f, 0.0f, 0.0f);
+					switchLight = switchLight - glm::vec4(1.0f, 0.0f, 0.0f,0.0f);
 				}
 
 				debounce = time;
@@ -686,11 +683,11 @@ class MyProject : public BaseProject {
 		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (switchLight.z == 0.0f) {
-					switchLight = switchLight + glm::vec3(0.0f, 0.0f, 1.0f);
+					switchLight = switchLight + glm::vec4(0.0f, 0.0f, 1.0f,0.0f);
 				}
 				else
 				{
-					switchLight = switchLight - glm::vec3(0.0f, 0.0f, 1.0f);
+					switchLight = switchLight - glm::vec4(0.0f, 0.0f, 1.0f,0.0f);
 				}
 
 				debounce = time;
@@ -721,9 +718,10 @@ class MyProject : public BaseProject {
 					disk.setSpeed(glm::vec2(0.0f, 0.0f));
 					paddle1.setSpeed(1.15);
 					paddle2.setSpeed(1.15);
-					switchLight = glm::vec3(1.0f, 1.0f, 1.0f);
+					switchLight = glm::vec4(1.0f, 1.0f, 1.0f,0.0f);
+					view = 0;
 				}
-				view=0;
+				
 				debounce = time;
 
 			}
@@ -731,7 +729,7 @@ class MyProject : public BaseProject {
 		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				view=3;
-				switchLight = glm::vec3(0.0f, 0.0f, 0.0f);
+				switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 				debounce = time;
 
 			}
@@ -748,9 +746,12 @@ class MyProject : public BaseProject {
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
-				view++;
-				debounce = time;
-				view = view % 3;
+				if (view != 3) {
+					view++;
+					debounce = time;
+					view = view % 3;
+				}
+				
 			}
 		}
 		if (view == 0) {
@@ -821,7 +822,8 @@ class MyProject : public BaseProject {
 
 
 		//Adding part for illumination in shader
-		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f)*0.2f;
+
+		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		gubo.lightDir = glm::vec3(cos(glm::radians(90.0f)) * cos(glm::radians(0.0f)), sin(glm::radians(90.0f)), cos(glm::radians(90.0f)) * sin(glm::radians(0.0f)));
 		gubo.lightPos = glm::vec3(0.0, 1.0, 0.0);
 		gubo.lightParams = glm::vec4(
