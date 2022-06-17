@@ -8,6 +8,7 @@ layout(set = 0, binding = 0) uniform globalUniformBufferObject {
 	vec3 lightColor;
 	vec4 lightParams;
 	float gamma;
+	vec3 switchLight;
 	vec3 eyePos;
 } gubo;
 
@@ -209,7 +210,7 @@ void main() {
 	);
 
 	//Rendering equation
-	vec3 L = (Lspot1*(fDiffuse1+fSpecular1)+Lspot2*(fDiffuse2+fSpecular2)+Lspot3*(fDiffuse3+fSpecular3))+Lamb;
+	vec3 L = (Lspot1*(fDiffuse1+fSpecular1)*gubo.switchLight.x+Lspot2*(fDiffuse2+fSpecular2)*gubo.switchLight.y+Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z)+Lamb;
 
 
 	outColor = vec4(clamp(L,vec3(0.0f), vec3(1.0f)), 1.0f);	
