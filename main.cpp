@@ -1,8 +1,6 @@
-
 #include "MyProject.hpp"
 #include "Disk.h"
 #include "Paddle.h"
-
 
 struct globalUniformBufferObject {
 	alignas(16) glm::mat4 view;
@@ -15,6 +13,7 @@ struct globalUniformBufferObject {
 	alignas(16) glm::vec3 switchLight;
 	alignas(16) glm::vec3 eyePos;
 };
+
 struct UniformBufferObject {
 	alignas(16) glm::mat4 model;
 };
@@ -33,17 +32,17 @@ class MyProject : public BaseProject {
 	//Table
 	Model M_Table;
 	Texture T_Table;
-	DescriptorSet DS_Table;	//instances of DSLobj
+	DescriptorSet DS_Table;	
 	//Disk
 	Model M_Disk;
 	Texture T_Disk;
 	DescriptorSet DS_Disk;
-	//Paddle red and blue
+	//Paddle red and blue (Multiple Descriptor Sets, single model but multiple objects)
 	Model M_Paddle;
 	Texture T_Paddle1;
-	DescriptorSet DS_Paddle1;	//First instance of the paddle
+	DescriptorSet DS_Paddle1;		
 	Texture T_Paddle2;
-	DescriptorSet DS_Paddle2;   //Second instance of the paddle
+	DescriptorSet DS_Paddle2;   
 	//Ground
 	Model M_Ground;
 	Texture T_Ground;
@@ -67,37 +66,39 @@ class MyProject : public BaseProject {
 	DescriptorSet DS_PointBlue5;
 
 	// Instance DS global
-	DescriptorSet DS_global;	//instance of DSLglobal
+	DescriptorSet DS_global;	
 
 	globalUniformBufferObject gubo{};
 
 	//Game variables
+	
 	//Model dimensions
 	float radiusDisk = 0.029;
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014 - 2 * 0.052;
 	float lengthTable = 1.893 - 2 * 0.068;
-
+	
+	//Types of camera angle
 	int view;
-	//Initial position/speed
+
+	//Initialization of disk and paddles
 	glm::vec3 Pos_p1 = glm::vec3(-0.57f, 0.0f, 0.0f);
 	glm::vec3 Pos_p2 = glm::vec3(0.57f, 0.0f, 0.0f);
 	glm::vec2 startingPosDisk = glm::vec2(0.0f,0.0f);
 	glm::vec2 startingSpeedDisk = glm::vec2(0.0f, 0.0f);
-
-	//Objects
 	Paddle paddle1 = Paddle::Paddle(Pos_p1, radiusDisk, radiusPaddle, widthTable, lengthTable, 1.15);
 	Paddle paddle2 = Paddle::Paddle(Pos_p2, radiusDisk, radiusPaddle, widthTable, lengthTable, 1.15);
 	Disk disk = Disk::Disk(startingPosDisk, startingSpeedDisk, radiusDisk, radiusPaddle, widthTable, lengthTable);
+
 	//Score
 	int scoreRed = 0;
 	int scoreBlue = 0;
 
-	//
-	glm::vec3 switchLight = glm::vec3(0.0f, 0.0f, 0.0f);
+	//Initialization of spotlights
+	glm::vec3 switchLight = glm::vec3(1.0f, 1.0f, 1.0f);
 	float radiusSpotLight = 40.0f;
 
-	// Here you set the main application parameters
+	
 	void setWindowParameters() {
 		// window size, titile and initial background
 		windowWidth = 1920;
@@ -116,7 +117,6 @@ class MyProject : public BaseProject {
 	void localInit() {
 		// Descriptor Layouts [what will be passed to the shaders]
 		DSLobj.init(this, {
-					// this array contains the binding:
 					// first  element : the binding number
 					// second element : the time of element (buffer or texture)
 					// third  element : the pipeline stage where it will be used
@@ -133,12 +133,12 @@ class MyProject : public BaseProject {
 		// be used in this pipeline. The first element will be set 0, and so on..
 		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSLglobal, &DSLobj});
 
-		// Models, textures and Descriptors (values assigned to the uniforms)
+		// Models, textures and Descriptors 
+
+		//Table
 		M_Table.init(this, "models/table.obj");
 		T_Table.init(this, "textures/airhockey-background.png");
 		DS_Table.init(this, &DSLobj, {
-		// the second parameter, is a pointer to the Uniform Set Layout of this set
-		// the last parameter is an array, with one element per binding of the set.
 		// first  elmenet : the binding number
 		// second element : UNIFORM or TEXTURE (an enum) depending on the type
 		// third  element : only for UNIFORMs, the size of the corresponding C++ object
@@ -147,15 +147,14 @@ class MyProject : public BaseProject {
 					{1, TEXTURE, 0, &T_Table}
 				});
 
-		//Disk initialization
-
+		//Disk 
 		M_Disk.init(this, "models/disk.obj");
 		T_Disk.init(this, "textures/disk.png");
 		DS_Disk.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Disk}
 			});
-
+		//Paddles
 		M_Paddle.init(this, "models/paddle.obj");
 		T_Paddle1.init(this, "textures/paddle1.png");
 		DS_Paddle1.init(this, &DSLobj, {
@@ -168,7 +167,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle2}
 			});
-
+		//Ground
 		M_Ground.init(this, "models/ground.obj");
 		T_Ground.init(this, "textures/ground.png");
 		DS_Ground.init(this, &DSLobj, {
@@ -176,7 +175,7 @@ class MyProject : public BaseProject {
 						{1, TEXTURE, 0, &T_Ground}
 			});
 		
-		//Point Counter
+		//Point Counters
 		M_PointCounter.init(this, "models/point_counter.obj");
 		T_PointCounter.init(this, "textures/point_counter.png");
 		DS_PointCounter1.init(this, &DSLobj, {
@@ -188,7 +187,7 @@ class MyProject : public BaseProject {
 						{1, TEXTURE, 0, &T_PointCounter}
 			});
 
-		
+		//Points
 		M_Point.init(this, "models/point.obj");
 		DS_PointRed1.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
@@ -240,70 +239,65 @@ class MyProject : public BaseProject {
 			});
 
 		gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f));
+					glm::vec3(0.0f, 0.0f, 0.0f),
+					glm::vec3(0.0f, 1.0f, 0.0f));
 		view = 0;
 		gubo.proj = glm::perspective(glm::radians(45.0f),
 			swapChainExtent.width / (float)swapChainExtent.height,
 			0.1f, 10.0f);
 		gubo.proj[1][1] *= -1;
-
 		gubo.switchLight = switchLight;
-
-
-
 	}
 
 	// Here you destroy all the objects you created!
 	void localCleanup() {
-		DS_Table.cleanup();
-		T_Table.cleanup();
-		M_Table.cleanup();
+		 DS_Table.cleanup();
+		 T_Table.cleanup();
+		 M_Table.cleanup();
 
-		DS_Disk.cleanup();
-		M_Disk.cleanup();
-		T_Disk.cleanup();
+		 DS_Disk.cleanup();
+		 M_Disk.cleanup();
+		 T_Disk.cleanup();
 
-		DS_Paddle1.cleanup();
-		M_Paddle.cleanup();
-		T_Paddle1.cleanup();
+		 DS_Paddle1.cleanup();
+		 M_Paddle.cleanup();
+		 T_Paddle1.cleanup();
 
-		DS_Paddle2.cleanup();
-		T_Paddle2.cleanup();
+		 DS_Paddle2.cleanup();
+		 T_Paddle2.cleanup();
 
-		DS_Ground.cleanup();
-		T_Ground.cleanup();
-		M_Ground.cleanup();
+		 DS_Ground.cleanup();
+		 T_Ground.cleanup();
+		 M_Ground.cleanup();
 
 		
-		M_PointCounter.cleanup();
-		T_PointCounter.cleanup();
-		DS_PointCounter1.cleanup();
-		DS_PointCounter2.cleanup();
+		 M_PointCounter.cleanup();
+		 T_PointCounter.cleanup();
+		 DS_PointCounter1.cleanup();
+		 DS_PointCounter2.cleanup();
 
-		M_Point.cleanup();
-		DS_PointRed1.cleanup();
-		DS_PointRed2.cleanup();
-		DS_PointRed3.cleanup();
-		DS_PointRed4.cleanup();
-		DS_PointRed5.cleanup();
-		DS_PointBlue1.cleanup();
-		DS_PointBlue2.cleanup();
-		DS_PointBlue3.cleanup();
-		DS_PointBlue4.cleanup();
-		DS_PointBlue5.cleanup();
+		 M_Point.cleanup();
+		 DS_PointRed1.cleanup();
+		 DS_PointRed2.cleanup();
+		 DS_PointRed3.cleanup();
+		 DS_PointRed4.cleanup();
+		 DS_PointRed5.cleanup();
+		 DS_PointBlue1.cleanup();
+		 DS_PointBlue2.cleanup();
+		 DS_PointBlue3.cleanup();
+		 DS_PointBlue4.cleanup();
+		 DS_PointBlue5.cleanup();
 		
 
-		P1.cleanup();
-		DS_global.cleanup();
+		 P1.cleanup();
+		 DS_global.cleanup();
 
-		DSLglobal.cleanup();
-		DSLobj.cleanup();
+		 DSLglobal.cleanup();
+		 DSLobj.cleanup();
 	}
 
 	// Here it is the creation of the command buffer:
-	// You send to the GPU all the objects you want to draw,
-	// with their buffers and textures
+	// You send to the GPU all the objects 
 	void populateCommandBuffer(VkCommandBuffer commandBuffer, int currentImage) {
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -313,6 +307,8 @@ class MyProject : public BaseProject {
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 0, 1, &DS_global.descriptorSets[currentImage],
 			0, nullptr);
+
+		//Table buffer initialization
 
 		VkBuffer vertexBuffers[] = {M_Table.vertexBuffer};
 		// property .vertexBuffer of models, contains the VkBuffer handle to its vertex buffer
@@ -355,6 +351,7 @@ class MyProject : public BaseProject {
 		vkCmdBindIndexBuffer(commandBuffer, M_Paddle.indexBuffer, 0,
 			VK_INDEX_TYPE_UINT32);
 		//Paddle1
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_Paddle1.descriptorSets[currentImage],
@@ -362,6 +359,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Paddle.indices.size()), 1, 0, 0, 0);
 		//Paddle2
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_Paddle2.descriptorSets[currentImage],
@@ -393,6 +391,7 @@ class MyProject : public BaseProject {
 		vkCmdBindIndexBuffer(commandBuffer, M_PointCounter.indexBuffer, 0,
 			VK_INDEX_TYPE_UINT32);
 		//PointCounter1
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointCounter1.descriptorSets[currentImage],
@@ -400,6 +399,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_PointCounter.indices.size()), 1, 0, 0, 0);
 		//PointCounter2
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointCounter2.descriptorSets[currentImage],
@@ -416,6 +416,7 @@ class MyProject : public BaseProject {
 		vkCmdBindIndexBuffer(commandBuffer, M_Point.indexBuffer, 0,
 			VK_INDEX_TYPE_UINT32);
 		//PointRed1
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointRed1.descriptorSets[currentImage],
@@ -423,6 +424,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointRed2
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointRed2.descriptorSets[currentImage],
@@ -430,6 +432,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointRed3
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointRed3.descriptorSets[currentImage],
@@ -437,6 +440,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointRed4
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointRed4.descriptorSets[currentImage],
@@ -444,6 +448,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointRed5
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointRed5.descriptorSets[currentImage],
@@ -454,6 +459,7 @@ class MyProject : public BaseProject {
 
 
 		//PointBlue1
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointBlue1.descriptorSets[currentImage],
@@ -461,6 +467,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointBlue2
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointBlue2.descriptorSets[currentImage],
@@ -468,6 +475,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointBlue3
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointBlue3.descriptorSets[currentImage],
@@ -475,6 +483,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointBlue4
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointBlue4.descriptorSets[currentImage],
@@ -482,6 +491,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 		//PointBlue5
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_PointBlue5.descriptorSets[currentImage],
@@ -492,6 +502,8 @@ class MyProject : public BaseProject {
 	}
 
 
+
+	//Functions to manage points
 	void goalRed() {
 		if (scoreRed == 5) {
 			scoreRed = 0;
@@ -503,7 +515,6 @@ class MyProject : public BaseProject {
 		}
 		paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
 		paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
-
 	}
 
 	void goalBlue() {
@@ -518,8 +529,6 @@ class MyProject : public BaseProject {
 		paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
 		paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
 	}
-
-
 
 	// Here is where you update the uniforms.
 	// Very likely this will be where you will be writing the logic of your application.
@@ -754,7 +763,7 @@ class MyProject : public BaseProject {
 		gubo.switchLight = switchLight;
 		gubo.gamma = 50.0f;
 
-		//TO SEE
+		
 
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
@@ -798,6 +807,10 @@ class MyProject : public BaseProject {
 			glm::rotate(glm::mat4(1.0), glm::radians(roll_p2), glm::vec3(0, 1, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p2), glm::vec3(1, 0, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1));
+
+
+
+
 
 		// Here is where you actually update your uniforms
 		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
@@ -970,6 +983,9 @@ class MyProject : public BaseProject {
 
 	}
 };
+
+
+
 
 // This is the main: probably you do not need to touch this!
 int main() {
