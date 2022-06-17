@@ -390,6 +390,7 @@ class MyProject : public BaseProject {
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Paddle, offsets_Paddle);
 		vkCmdBindIndexBuffer(commandBuffer, M_Paddle.indexBuffer, 0,
 			VK_INDEX_TYPE_UINT32);
+
 		//Paddle1
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -398,6 +399,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Paddle.indices.size()), 1, 0, 0, 0);
+
 		//Paddle2
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -430,6 +432,7 @@ class MyProject : public BaseProject {
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_PointCounter, offsets_PointCounter);
 		vkCmdBindIndexBuffer(commandBuffer, M_PointCounter.indexBuffer, 0,
 			VK_INDEX_TYPE_UINT32);
+
 		//PointCounter1
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -438,6 +441,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_PointCounter.indices.size()), 1, 0, 0, 0);
+
 		//PointCounter2
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -455,6 +459,7 @@ class MyProject : public BaseProject {
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Point, offsets_Point);
 		vkCmdBindIndexBuffer(commandBuffer, M_Point.indexBuffer, 0,
 			VK_INDEX_TYPE_UINT32);
+
 		//PointRed1
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -463,6 +468,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointRed2
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -471,6 +477,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointRed3
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -479,6 +486,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointRed4
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -487,6 +495,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointRed5
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -497,7 +506,6 @@ class MyProject : public BaseProject {
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 
 
-
 		//PointBlue1
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -506,6 +514,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointBlue2
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -514,6 +523,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointBlue3
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -522,6 +532,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointBlue4
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -530,6 +541,7 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
+
 		//PointBlue5
 
 		vkCmdBindDescriptorSets(commandBuffer,
@@ -541,6 +553,7 @@ class MyProject : public BaseProject {
 
 
 		//Menu
+
 		VkBuffer vertexBuffers_Menu[] = { M_Menu.vertexBuffer };
 		VkDeviceSize offsets_Menu[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Menu, offsets_Menu);
@@ -552,14 +565,18 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
+
 		//Win Red
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_WinRed.descriptorSets[currentImage],
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
+
 		//Win Blue
+
 		vkCmdBindDescriptorSets(commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			P1.pipelineLayout, 1, 1, &DS_WinBlue.descriptorSets[currentImage],
@@ -601,7 +618,6 @@ class MyProject : public BaseProject {
 	}
 
 	// Here is where you update the uniforms.
-	// Very likely this will be where you will be writing the logic of your application.
 	void updateUniformBuffer(uint32_t currentImage) {
 
 		//Time variables
@@ -616,8 +632,6 @@ class MyProject : public BaseProject {
 		lastTime = time;
 
 		static float debounce = time;
-
-
 
 
 	    //variables for input management
@@ -668,14 +682,17 @@ class MyProject : public BaseProject {
 		}
 
 		//utility input
+		//Increase speed
 		if (glfwGetKey(window, GLFW_KEY_Q)) {
 			paddle1.updatespeed(1,deltaT);
 			paddle2.updatespeed(1, deltaT);
 		}
+		//Decrease speed
 		if (glfwGetKey(window, GLFW_KEY_E)) {
 			paddle1.updatespeed(0, deltaT);
 			paddle2.updatespeed(0, deltaT);
 		}
+		//Reset game
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				scoreBlue = 0;
@@ -690,6 +707,7 @@ class MyProject : public BaseProject {
 				switchLight = glm::vec4(1.0f, 1.0f, 1.0f,0.0f);
 			}
 		}
+		//Switch left light
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (switchLight.y == 0.0f) {
@@ -705,6 +723,7 @@ class MyProject : public BaseProject {
 
 			}
 		}
+		//Switch central light
 		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (switchLight.x == 0.0f) {
@@ -719,6 +738,7 @@ class MyProject : public BaseProject {
 
 			}
 		}
+		//Switch right light
 		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (switchLight.z == 0.0f) {
@@ -733,19 +753,20 @@ class MyProject : public BaseProject {
 
 			}
 		}
+		//Decrease radius spot light
 		if (glfwGetKey(window, GLFW_KEY_O)) {
-
 			if (radiusSpotLight >= 10.0f){
 				radiusSpotLight -= 20.0 * deltaT;
 				return;
 			}
 		}
+		//Increase radius spot light
 		if (glfwGetKey(window, GLFW_KEY_P)) {
 			if (radiusSpotLight <= 40.0f)
 				radiusSpotLight += 20.0 * deltaT;
 			return;
 		}
-
+		//Start game
 		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (view >= 3) {
@@ -760,29 +781,18 @@ class MyProject : public BaseProject {
 					switchLight = glm::vec4(1.0f, 1.0f, 1.0f,0.0f);
 					view = 0;
 				}
-				
 				debounce = time;
-
 			}
 		}
+		//Open menu
 		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				view=3;
 				switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 				debounce = time;
-
 			}
 		}
-
-		UniformBufferObject ubo{};
-
-
-		void* data;
-
-
-
-	    //change of camera view
-
+		//Change camera view
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			if (time - debounce > 0.5) {
 				if (view < 3) {
@@ -790,15 +800,24 @@ class MyProject : public BaseProject {
 					debounce = time;
 					view = view % 3;
 				}
-				
 			}
 		}
+		UniformBufferObject ubo{};
+
+
+		void* data;
+
+
+
+		//Different camera view setup
+		//Side view
 		if (view == 0) {
 			gubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f));
 			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
 		}
+		//Red view
 		else if (view == 1)
 		{
 			gubo.view = glm::lookAt(glm::vec3(-1.5f, 0.5f, 0.0f),
@@ -814,8 +833,8 @@ class MyProject : public BaseProject {
 			mz_p2 = m_change;
 
 			gubo.eyePos = glm::vec3(-1.5f, 0.5f, 0.0f);
-
 		}
+		//Blue view
 		else if (view == 2)
 		{
 			gubo.view = glm::lookAt(glm::vec3(1.5f, 0.5f, 0.0f),
@@ -832,6 +851,7 @@ class MyProject : public BaseProject {
 
 			gubo.eyePos = glm::vec3(1.5f, 0.5f, 0.0f);
 		}
+		//Menu view
 		else if (view == 3) {
 			gubo.view = glm::lookAt(glm::vec3(0.0f, 10.0f, 0.000000001f),
 				glm::vec3(0.0f, 0.0f, 0.0f),
@@ -839,6 +859,7 @@ class MyProject : public BaseProject {
 			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
 			switchLight = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		}
+		//Red win view
 		else if (view == 4) {
 			gubo.view = glm::lookAt(glm::vec3(0.0f, 20.0f, 0.000000001f),
 				glm::vec3(0.0f, 0.0f, 0.0f),
@@ -846,6 +867,7 @@ class MyProject : public BaseProject {
 			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
 			switchLight = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		}
+		//Blue win view
 		else if (view == 5) {
 			gubo.view = glm::lookAt(glm::vec3(0.0f, 30.0f, 0.000000001f),
 				glm::vec3(0.0f, 0.0f, 0.0f),
@@ -872,78 +894,6 @@ class MyProject : public BaseProject {
 		//Paddles update
 		paddle1.updatePaddle1(deltaT,mx_p1,mz_p1);
 		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
-
-
-		//Adding part for illumination in shader
-
-		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		gubo.lightDir = glm::vec3(cos(glm::radians(90.0f)) * cos(glm::radians(0.0f)), sin(glm::radians(90.0f)), cos(glm::radians(90.0f)) * sin(glm::radians(0.0f)));
-		gubo.lightPos = glm::vec3(0.0, 1.0, 0.0);
-		gubo.lightParams = glm::vec4(
-			cos(glm::radians(5.0f)), cos(glm::radians(radiusSpotLight)), 2.0f, 1.8f
-		);
-		gubo.switchLight = switchLight;
-		gubo.gamma = 50.0f;
-
-
-
-		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
-			sizeof(gubo), 0, &data);
-		memcpy(data, &gubo, sizeof(gubo));
-		vkUnmapMemory(device, DS_global.uniformBuffersMemory[0][currentImage]);
-
-
-		//Table
-		ubo.model = glm::mat4(1.0f);
-
-
-		vkMapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage], 0,
-							sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage]);
-
-
-		//Disk
-		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(disk.getPos().x, 0.0f, disk.getPos().y));
-
-
-		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
-			sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
-
-		//First paddle
-		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle1.getPos().x, paddle1.getPos().y, paddle1.getPos().z)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(roll_p1), glm::vec3(0, 1, 0)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p1), glm::vec3(1, 0, 0)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1));
-
-
-		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
-			sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage]);
-
-		//Second paddle
-		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle2.getPos().x, paddle2.getPos().y, paddle2.getPos().z)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(roll_p2), glm::vec3(0, 1, 0)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p2), glm::vec3(1, 0, 0)) *
-			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1));
-
-
-		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
-			sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage]);
-
-		//Ground
-		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.7f, 0.0f));
-
-		vkMapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage], 0,
-			sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage]);
-
 
 		//Management of points translations
 		float deltaTransPoint = 0.22;
@@ -1014,6 +964,76 @@ class MyProject : public BaseProject {
 			moveBlue5 = 1;
 			break;
 		}
+
+		//Adding part for illumination in shader
+
+		gubo.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		gubo.lightDir = glm::vec3(cos(glm::radians(90.0f)) * cos(glm::radians(0.0f)), sin(glm::radians(90.0f)), cos(glm::radians(90.0f)) * sin(glm::radians(0.0f)));
+		gubo.lightPos = glm::vec3(0.0, 1.0, 0.0);
+		gubo.lightParams = glm::vec4(
+			cos(glm::radians(5.0f)), cos(glm::radians(radiusSpotLight)), 2.0f, 1.8f
+		);
+		gubo.switchLight = switchLight;
+		gubo.gamma = 50.0f;
+
+
+		
+		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(gubo), 0, &data);
+		memcpy(data, &gubo, sizeof(gubo));
+		vkUnmapMemory(device, DS_global.uniformBuffersMemory[0][currentImage]);
+
+
+		//Table
+		ubo.model = glm::mat4(1.0f);
+
+
+		vkMapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage], 0,
+							sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage]);
+
+
+		//Disk
+		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(disk.getPos().x, 0.0f, disk.getPos().y));
+
+
+		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage]);
+
+		//First paddle
+		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle1.getPos().x, paddle1.getPos().y, paddle1.getPos().z)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(roll_p1), glm::vec3(0, 1, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p1), glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1));
+
+
+		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage]);
+
+		//Second paddle
+		ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(paddle2.getPos().x, paddle2.getPos().y, paddle2.getPos().z)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(roll_p2), glm::vec3(0, 1, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p2), glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p2), glm::vec3(0, 0, 1));
+
+
+		vkMapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Paddle2.uniformBuffersMemory[0][currentImage]);
+
+		//Ground
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.7f, 0.0f));
+
+		vkMapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Ground.uniformBuffersMemory[0][currentImage]);
 
 
 		//PointCounter1

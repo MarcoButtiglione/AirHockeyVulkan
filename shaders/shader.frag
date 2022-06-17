@@ -74,7 +74,7 @@ vec3 PhongReflection(vec3 ms, vec3 wr, vec3 lx, vec3 nx, float gamma)  {
 
 vec3 spot_light_color(vec3 l, float g ,vec3 p, vec3 x,float beta, vec3 d, float cOut, float cIn) {
 	/*
-	spot_light_color = L(l,lx)
+	spot_light_color = L
 
 	l = light color
 	g = target distance (the distance at which the light reduction is exactly 1)
@@ -117,9 +117,10 @@ void main() {
 	float gamma =  gubo.gamma;
 
 	//Light model
+	//Direction light(for menu,red and blue win panel)
 	vec3 L_directional = gubo.lightColor;
 	vec3 lx_directional = gubo.lightDir;
-
+	//Spot light 1
 	vec3 Lspot1 = spot_light_color(
 		gubo.lightColor*0.2f,
 		gubo.lightParams.w,
@@ -130,6 +131,7 @@ void main() {
 		gubo.lightParams.y,
 		gubo.lightParams.x
 	);
+	//Spot light 2
 	vec3 Lspot2 = spot_light_color(
 		gubo.lightColor*0.2f,
 		gubo.lightParams.w,
@@ -140,6 +142,7 @@ void main() {
 		gubo.lightParams.y,
 		gubo.lightParams.x
 	);
+	//Spot light 3
 	vec3 Lspot3 = spot_light_color(
 		gubo.lightColor*0.2f,
 		gubo.lightParams.w,
@@ -152,19 +155,22 @@ void main() {
 	);
 
 	//Light direction
+	//Spot light 1
 	vec3 lx1 = spot_light_dir(
 		gubo.lightPos,
 		fragPos
 	);
+	//Spot light 2
 	vec3 lx2 = spot_light_dir(
 		gubo.lightPos+vec3(-0.55f,0.0f,0.0f),
 		fragPos
 	);
+	//Spot light 3
 	vec3 lx3 = spot_light_dir(
 		gubo.lightPos+vec3(0.55f,0.0f,0.0f),
 		fragPos
 	);
-	
+
 
 	//BRDF functions
 	vec3 fDiffuse_Directional = LambertReflection(
