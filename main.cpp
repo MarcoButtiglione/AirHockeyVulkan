@@ -597,7 +597,8 @@ class MyProject : public BaseProject {
 				paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
 				disk.setPos(glm::vec3(0.0f, 0.0f, 0.0f));
 				disk.setSpeed(glm::vec2(0.0f, 0.0f));
-
+				paddle1.setSpeed(1.15);
+				paddle2.setSpeed(1.15);
 				debounce = time;
 				
 			}
