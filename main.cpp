@@ -32,7 +32,7 @@ class MyProject : public BaseProject {
 	//Table
 	Model M_Table;
 	Texture T_Table;
-	DescriptorSet DS_Table;	
+	DescriptorSet DS_Table;
 	//Disk
 	Model M_Disk;
 	Texture T_Disk;
@@ -40,9 +40,9 @@ class MyProject : public BaseProject {
 	//Paddle red and blue (Multiple Descriptor Sets, single model but multiple objects)
 	Model M_Paddle;
 	Texture T_Paddle1;
-	DescriptorSet DS_Paddle1;		
+	DescriptorSet DS_Paddle1;
 	Texture T_Paddle2;
-	DescriptorSet DS_Paddle2;   
+	DescriptorSet DS_Paddle2;
 	//Ground
 	Model M_Ground;
 	Texture T_Ground;
@@ -65,19 +65,24 @@ class MyProject : public BaseProject {
 	DescriptorSet DS_PointBlue4;
 	DescriptorSet DS_PointBlue5;
 
+	//Starting interface
+	Model M_Menu;
+	Texture T_Menu;
+	DescriptorSet DS_Menu;
+
 	// Instance DS global
-	DescriptorSet DS_global;	
+	DescriptorSet DS_global;
 
 	globalUniformBufferObject gubo{};
 
 	//Game variables
-	
+
 	//Model dimensions
 	float radiusDisk = 0.029;
 	float radiusPaddle = 0.0705;
 	float widthTable = 1.014 - 2 * 0.052;
 	float lengthTable = 1.893 - 2 * 0.068;
-	
+
 	//Types of camera angle
 	int view;
 
@@ -98,7 +103,7 @@ class MyProject : public BaseProject {
 	glm::vec3 switchLight = glm::vec3(1.0f, 1.0f, 1.0f);
 	float radiusSpotLight = 40.0f;
 
-	
+
 	void setWindowParameters() {
 		// window size, titile and initial background
 		windowWidth = 1920;
@@ -107,9 +112,9 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
 		// Descriptor pool sizes
-		uniformBlocksInPool = 18;
-		texturesInPool =20;
-		setsInPool = 18;
+		uniformBlocksInPool = 19;
+		texturesInPool =18;
+		setsInPool = 19;
 
 	}
 
@@ -133,7 +138,7 @@ class MyProject : public BaseProject {
 		// be used in this pipeline. The first element will be set 0, and so on..
 		P1.init(this, "shaders/vert.spv", "shaders/frag.spv", {&DSLglobal, &DSLobj});
 
-		// Models, textures and Descriptors 
+		// Models, textures and Descriptors
 
 		//Table
 		M_Table.init(this, "models/table.obj");
@@ -147,7 +152,7 @@ class MyProject : public BaseProject {
 					{1, TEXTURE, 0, &T_Table}
 				});
 
-		//Disk 
+		//Disk
 		M_Disk.init(this, "models/disk.obj");
 		T_Disk.init(this, "textures/disk.png");
 		DS_Disk.init(this, &DSLobj, {
@@ -174,7 +179,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Ground}
 			});
-		
+
 		//Point Counters
 		M_PointCounter.init(this, "models/point_counter.obj");
 		T_PointCounter.init(this, "textures/point_counter.png");
@@ -193,12 +198,12 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
 			});
-		
+
 		DS_PointRed2.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
 			});
-		
+
 		DS_PointRed3.init(this, &DSLobj, {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle1}
@@ -231,7 +236,13 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle2}
 			});
-		
+		//Starting interface
+		M_Menu.init(this, "models/ground.obj");
+		T_Menu.init(this, "textures/menu.png");
+		DS_Menu.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Menu}
+			});
 
 		//DS initialization
 		DS_global.init(this, &DSLglobal, {
@@ -248,6 +259,9 @@ class MyProject : public BaseProject {
 		gubo.proj[1][1] *= -1;
 		gubo.switchLight = switchLight;
 	}
+
+
+
 
 	// Here you destroy all the objects you created!
 	void localCleanup() {
@@ -270,24 +284,30 @@ class MyProject : public BaseProject {
 		 T_Ground.cleanup();
 		 M_Ground.cleanup();
 
-		
+
 		 M_PointCounter.cleanup();
 		 T_PointCounter.cleanup();
 		 DS_PointCounter1.cleanup();
 		 DS_PointCounter2.cleanup();
 
-		 M_Point.cleanup();
-		 DS_PointRed1.cleanup();
-		 DS_PointRed2.cleanup();
-		 DS_PointRed3.cleanup();
-		 DS_PointRed4.cleanup();
-		 DS_PointRed5.cleanup();
-		 DS_PointBlue1.cleanup();
-		 DS_PointBlue2.cleanup();
-		 DS_PointBlue3.cleanup();
-		 DS_PointBlue4.cleanup();
-		 DS_PointBlue5.cleanup();
-		
+
+		M_Point.cleanup();
+		DS_PointRed1.cleanup();
+		DS_PointRed2.cleanup();
+		DS_PointRed3.cleanup();
+		DS_PointRed4.cleanup();
+		DS_PointRed5.cleanup();
+		DS_PointBlue1.cleanup();
+		DS_PointBlue2.cleanup();
+		DS_PointBlue3.cleanup();
+		DS_PointBlue4.cleanup();
+		DS_PointBlue5.cleanup();
+
+		DS_Menu.cleanup();
+		T_Menu.cleanup();
+		M_Menu.cleanup();
+
+
 
 		 P1.cleanup();
 		 DS_global.cleanup();
@@ -297,7 +317,7 @@ class MyProject : public BaseProject {
 	}
 
 	// Here it is the creation of the command buffer:
-	// You send to the GPU all the objects 
+	// You send to the GPU all the objects
 	void populateCommandBuffer(VkCommandBuffer commandBuffer, int currentImage) {
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -382,7 +402,7 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Ground.indices.size()), 1, 0, 0, 0);
 
-		
+
 		//PointCounter buffer initialization
 
 		VkBuffer vertexBuffers_PointCounter[] = { M_PointCounter.vertexBuffer };
@@ -498,7 +518,20 @@ class MyProject : public BaseProject {
 			0, nullptr);
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
-			
+
+
+		//Starting Menu
+		VkBuffer vertexBuffers_Menu[] = { M_Menu.vertexBuffer };
+		VkDeviceSize offsets_Menu[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Menu, offsets_Menu);
+		vkCmdBindIndexBuffer(commandBuffer, M_Menu.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_Menu.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
 	}
 
 
@@ -560,7 +593,7 @@ class MyProject : public BaseProject {
 
 
 	    //inputs capture
-		
+
 		//paddle1
 		if (glfwGetKey(window, GLFW_KEY_D)) {
 			mx_p1 = 1;
@@ -617,7 +650,7 @@ class MyProject : public BaseProject {
 				paddle1.setSpeed(1.15);
 				paddle2.setSpeed(1.15);
 				debounce = time;
-				
+
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
@@ -629,8 +662,8 @@ class MyProject : public BaseProject {
 				{
 					switchLight = switchLight - glm::vec3(0.0f, 1.0f, 0.0f);
 				}
-				
-				
+
+
 				debounce = time;
 
 			}
@@ -664,7 +697,7 @@ class MyProject : public BaseProject {
 			}
 		}
 		if (glfwGetKey(window, GLFW_KEY_O)) {
-		
+
 			if (radiusSpotLight >= 10.0f){
 				radiusSpotLight -= 20.0 * deltaT;
 				return;
@@ -674,6 +707,33 @@ class MyProject : public BaseProject {
 			if (radiusSpotLight <= 40.0f)
 				radiusSpotLight += 20.0 * deltaT;
 			return;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				if (view == 3) {
+					scoreBlue = 0;
+					scoreRed = 0;
+					paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
+					paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
+					disk.setPos(glm::vec3(0.0f, 0.0f, 0.0f));
+					disk.setSpeed(glm::vec2(0.0f, 0.0f));
+					paddle1.setSpeed(1.15);
+					paddle2.setSpeed(1.15);
+					switchLight = glm::vec3(1.0f, 1.0f, 1.0f);
+				}
+				view=0;
+				debounce = time;
+
+			}
+		}
+		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				view=3;
+				switchLight = glm::vec3(0.0f, 0.0f, 0.0f);
+				debounce = time;
+
+			}
 		}
 
 		UniformBufferObject ubo{};
@@ -731,6 +791,12 @@ class MyProject : public BaseProject {
 
 			gubo.eyePos = glm::vec3(1.5f, 0.5f, 0.0f);
 		}
+		if (view == 3) {
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 10.0f, 0.000000001f),
+				glm::vec3(0.0f, 0.0f, 0.0f),
+				glm::vec3(0.0f, 1.0f, 0.0f));
+			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
+		}
 
 
 
@@ -763,7 +829,7 @@ class MyProject : public BaseProject {
 		gubo.switchLight = switchLight;
 		gubo.gamma = 50.0f;
 
-		
+
 
 		vkMapMemory(device, DS_global.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(gubo), 0, &data);
@@ -774,7 +840,7 @@ class MyProject : public BaseProject {
 		//Table
 		ubo.model = glm::mat4(1.0f);
 
-		
+
 		vkMapMemory(device, DS_Table.uniformBuffersMemory[0][currentImage], 0,
 							sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
@@ -784,7 +850,7 @@ class MyProject : public BaseProject {
 		//Disk
 		ubo.model = glm::translate(glm::mat4(1.0f),glm::vec3(disk.getPos().x, 0.0f, disk.getPos().y));
 
-		
+
 		vkMapMemory(device, DS_Disk.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
@@ -796,7 +862,7 @@ class MyProject : public BaseProject {
 			glm::rotate(glm::mat4(1.0), glm::radians(pitch_p1), glm::vec3(1, 0, 0)) *
 			glm::rotate(glm::mat4(1.0), glm::radians(yaw_p1), glm::vec3(0, 0, 1));
 
-		
+
 		vkMapMemory(device, DS_Paddle1.uniformBuffersMemory[0][currentImage], 0,
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
@@ -893,7 +959,7 @@ class MyProject : public BaseProject {
 			break;
 		}
 
-		
+
 		//PointCounter1
 		ubo.model = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.9f, 0.0f, 0.0f));
 
@@ -982,6 +1048,17 @@ class MyProject : public BaseProject {
 			sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage]);
+
+		//Starting Menu
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f))*
+			glm::rotate(glm::mat4(1.0), glm::radians(180.0f), glm::vec3(0, 1, 0))*
+			glm::scale(glm::mat4(1.0),glm::vec3(0.8f, 0.5f, 0.4f));
+
+		vkMapMemory(device, DS_Menu.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Menu.uniformBuffersMemory[0][currentImage]);
+
 	}
 };
 
