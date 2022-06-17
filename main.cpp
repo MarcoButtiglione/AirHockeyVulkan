@@ -66,6 +66,11 @@ class MyProject : public BaseProject {
 	DescriptorSet DS_PointBlue4;
 	DescriptorSet DS_PointBlue5;
 
+	//Starting interface
+	Model M_Menu;
+	Texture T_Menu;
+	DescriptorSet DS_Menu;
+
 	// Instance DS global
 	DescriptorSet DS_global;	//instance of DSLglobal
 
@@ -106,9 +111,9 @@ class MyProject : public BaseProject {
 		initialBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
 		// Descriptor pool sizes
-		uniformBlocksInPool = 18;
-		texturesInPool =20;
-		setsInPool = 18;
+		uniformBlocksInPool = 19;
+		texturesInPool =18;
+		setsInPool = 19;
 
 	}
 
@@ -232,7 +237,13 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
 						{1, TEXTURE, 0, &T_Paddle2}
 			});
-		
+		//Starting interface
+		M_Menu.init(this, "models/ground.obj");
+		T_Menu.init(this, "textures/menu.png");
+		DS_Menu.init(this, &DSLobj, {
+						{0, UNIFORM, sizeof(UniformBufferObject), nullptr},
+						{1, TEXTURE, 0, &T_Menu}
+			});
 
 		//DS initialization
 		DS_global.init(this, &DSLglobal, {
@@ -253,6 +264,9 @@ class MyProject : public BaseProject {
 
 
 	}
+
+
+
 
 	// Here you destroy all the objects you created!
 	void localCleanup() {
@@ -292,6 +306,10 @@ class MyProject : public BaseProject {
 		DS_PointBlue3.cleanup();
 		DS_PointBlue4.cleanup();
 		DS_PointBlue5.cleanup();
+
+		DS_Menu.cleanup();
+		T_Menu.cleanup();
+		M_Menu.cleanup();
 		
 
 		P1.cleanup();
@@ -489,6 +507,19 @@ class MyProject : public BaseProject {
 		vkCmdDrawIndexed(commandBuffer,
 			static_cast<uint32_t>(M_Point.indices.size()), 1, 0, 0, 0);
 			
+
+		//Starting Menu
+		VkBuffer vertexBuffers_Menu[] = { M_Menu.vertexBuffer };
+		VkDeviceSize offsets_Menu[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers_Menu, offsets_Menu);
+		vkCmdBindIndexBuffer(commandBuffer, M_Menu.indexBuffer, 0,
+			VK_INDEX_TYPE_UINT32);
+		vkCmdBindDescriptorSets(commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			P1.pipelineLayout, 1, 1, &DS_Menu.descriptorSets[currentImage],
+			0, nullptr);
+		vkCmdDrawIndexed(commandBuffer,
+			static_cast<uint32_t>(M_Menu.indices.size()), 1, 0, 0, 0);
 	}
 
 
@@ -666,6 +697,33 @@ class MyProject : public BaseProject {
 			return;
 		}
 
+		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				if (view == 3) {
+					scoreBlue = 0;
+					scoreRed = 0;
+					paddle1.setPos(glm::vec3(-0.57f, 0.0f, 0.0f));
+					paddle2.setPos(glm::vec3(0.57f, 0.0f, 0.0f));
+					disk.setPos(glm::vec3(0.0f, 0.0f, 0.0f));
+					disk.setSpeed(glm::vec2(0.0f, 0.0f));
+					paddle1.setSpeed(1.15);
+					paddle2.setSpeed(1.15);
+					switchLight = glm::vec3(1.0f, 1.0f, 1.0f);
+				}
+				view=0;
+				debounce = time;
+				
+			}
+		}
+		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				view=3;
+				switchLight = glm::vec3(0.0f, 0.0f, 0.0f);
+				debounce = time;
+				
+			}
+		}
+
 		UniformBufferObject ubo{};
 
 
@@ -720,6 +778,12 @@ class MyProject : public BaseProject {
 			mz_p2 = m_change;
 
 			gubo.eyePos = glm::vec3(1.5f, 0.5f, 0.0f);
+		}
+		if (view == 3) {
+			gubo.view = glm::lookAt(glm::vec3(0.0f, 10.0f, 0.000000001f),
+				glm::vec3(0.0f, 0.0f, 0.0f),
+				glm::vec3(0.0f, 1.0f, 0.0f));
+			gubo.eyePos = glm::vec3(0.0f, 1.0f, 1.0f);
 		}
 
 
@@ -967,6 +1031,15 @@ class MyProject : public BaseProject {
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(device, DS_PointBlue5.uniformBuffersMemory[0][currentImage]);
 
+		//Starting Menu
+		ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f))*
+			glm::rotate(glm::mat4(1.0), glm::radians(180.0f), glm::vec3(0, 1, 0))*
+			glm::scale(glm::mat4(1.0),glm::vec3(0.8f, 0.5f, 0.4f));
+
+		vkMapMemory(device, DS_Menu.uniformBuffersMemory[0][currentImage], 0,
+			sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(device, DS_Menu.uniformBuffersMemory[0][currentImage]);
 
 	}
 };
