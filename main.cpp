@@ -12,6 +12,7 @@ struct globalUniformBufferObject {
 	alignas(16) glm::vec3 lightColor;
 	alignas(16) glm::vec4 lightParams;
 	alignas(16) float gamma;
+	alignas(16) glm::vec3 switchLight;
 	alignas(16) glm::vec3 eyePos;
 };
 struct UniformBufferObject {
@@ -91,6 +92,10 @@ class MyProject : public BaseProject {
 	//Score
 	int scoreRed = 0;
 	int scoreBlue = 0;
+
+	//
+	glm::vec3 switchLight = glm::vec3(0.0f, 0.0f, 0.0f);
+	float radiusSpotLight = 40.0f;
 
 	// Here you set the main application parameters
 	void setWindowParameters() {
@@ -243,7 +248,7 @@ class MyProject : public BaseProject {
 			0.1f, 10.0f);
 		gubo.proj[1][1] *= -1;
 
-
+		gubo.switchLight = switchLight;
 
 
 
@@ -490,6 +495,7 @@ class MyProject : public BaseProject {
 	void goalRed() {
 		if (scoreRed == 5) {
 			scoreRed = 0;
+			scoreBlue = 0;
 		}
 		else
 		{
@@ -502,6 +508,7 @@ class MyProject : public BaseProject {
 
 	void goalBlue() {
 		if (scoreBlue == 5) {
+			scoreRed = 0;
 			scoreBlue = 0;
 		}
 		else {
@@ -602,6 +609,61 @@ class MyProject : public BaseProject {
 				
 			}
 		}
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				if (switchLight.y == 0.0f) {
+					switchLight = switchLight + glm::vec3(0.0f, 1.0f, 0.0f);
+				}
+				else
+				{
+					switchLight = switchLight - glm::vec3(0.0f, 1.0f, 0.0f);
+				}
+				
+				
+				debounce = time;
+
+			}
+		}
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				if (switchLight.x == 0.0f) {
+					switchLight = switchLight + glm::vec3(1.0f, 0.0f, 0.0f);
+				}
+				else
+				{
+					switchLight = switchLight - glm::vec3(1.0f, 0.0f, 0.0f);
+				}
+
+				debounce = time;
+
+			}
+		}
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+			if (time - debounce > 0.5) {
+				if (switchLight.z == 0.0f) {
+					switchLight = switchLight + glm::vec3(0.0f, 0.0f, 1.0f);
+				}
+				else
+				{
+					switchLight = switchLight - glm::vec3(0.0f, 0.0f, 1.0f);
+				}
+
+				debounce = time;
+
+			}
+		}
+		if (glfwGetKey(window, GLFW_KEY_O)) {
+		
+			if (radiusSpotLight >= 10.0f){
+				radiusSpotLight -= 20.0 * deltaT;
+				return;
+			}
+		}
+		if (glfwGetKey(window, GLFW_KEY_P)) {
+			if (radiusSpotLight <= 40.0f)
+				radiusSpotLight += 20.0 * deltaT;
+			return;
+		}
 
 		UniformBufferObject ubo{};
 
@@ -686,8 +748,9 @@ class MyProject : public BaseProject {
 		gubo.lightDir = glm::vec3(cos(glm::radians(90.0f)) * cos(glm::radians(0.0f)), sin(glm::radians(90.0f)), cos(glm::radians(90.0f)) * sin(glm::radians(0.0f)));
 		gubo.lightPos = glm::vec3(0.0, 1.0, 0.0);
 		gubo.lightParams = glm::vec4(
-			cos(glm::radians(0.0f)), cos(glm::radians(25.0f)), 2.0f, 1.8f
+			cos(glm::radians(5.0f)), cos(glm::radians(radiusSpotLight)), 2.0f, 1.8f
 		);
+		gubo.switchLight = switchLight;
 		gubo.gamma = 50.0f;
 
 		//TO SEE
