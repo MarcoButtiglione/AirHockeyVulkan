@@ -653,6 +653,8 @@ class MyProject : public BaseProject {
 	// Here is where you update the uniforms.
 	void updateUniformBuffer(uint32_t currentImage) {
 
+
+
 		//Time variables
 
 		static auto startTime = std::chrono::high_resolution_clock::now();
@@ -923,48 +925,116 @@ class MyProject : public BaseProject {
 			goalRed();
 			break;
 		}
-		/*
-		glm::vec3 oldPos1 = paddle1.getPos();
-		glm::vec3 oldPos2 = paddle2.getPos();
-		paddle1.updatePaddle1(deltaT, mx_p1, mz_p1);
-		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
-
-
-		if (!canStep(paddle1.getPos().x, paddle1.getPos().z)) {
-
-			paddle1.setPos(oldPos1);
-		}
-		if (!canStep(paddle2.getPos().x, paddle2.getPos().z)) {
-			paddle2.setPos(oldPos2);
-		}
-		*/
-
+		
+		//Paddle1
 		if (canStep(paddle1.getNextPos(deltaT, mx_p1, mz_p1).x, paddle1.getNextPos(deltaT, mx_p1, mz_p1).z)) {
-			paddle1.updatePaddle1(deltaT, mx_p1, mz_p1);
+			paddle1.updatePaddle(deltaT, mx_p1, mz_p1);
 		}
-		
-		else if (canStep(paddle1.getNextPos(deltaT, mx_p1, 0).x, paddle1.getNextPos(deltaT, mx_p1, 0).z)) {
-			paddle1.updatePaddle1(deltaT, mx_p1, 0);
+		else if (mx_p1 != 0 && canStep(paddle1.getNextPos(deltaT, mx_p1, 0).x, paddle1.getNextPos(deltaT, mx_p1, 0).z)) {
+			paddle1.updatePaddle(deltaT, mx_p1, 0);
 		}
-		else if ( canStep(paddle1.getNextPos(deltaT, 0, mz_p1).x, paddle1.getNextPos(deltaT, 0, mz_p1).z)) {
-			paddle1.updatePaddle1(deltaT, 0, mz_p1);
+		else if (mz_p1 != 0 && canStep(paddle1.getNextPos(deltaT, 0, mz_p1).x, paddle1.getNextPos(deltaT, 0, mz_p1).z)) {
+			paddle1.updatePaddle(deltaT, 0, mz_p1);
 		}
-		
-		
-		
-		
+		else {
 
+			if (mx_p1 == 1 && !canStep(paddle1.getNextPos(deltaT, 0, 1).x, paddle1.getNextPos(deltaT, 0, 1).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, 1, -1).x, paddle1.getNextPos(deltaT, 1, -1).z)) {
+					paddle1.updatePaddle(deltaT, 1, -1);
+				}
+			}
+			else if (mx_p1 == 1 && !canStep(paddle1.getNextPos(deltaT, 0, -1).x, paddle1.getNextPos(deltaT, 0, -1).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, 1, 1).x, paddle1.getNextPos(deltaT, 1, 1).z)) {
+					paddle1.updatePaddle(deltaT, 1, 1);
+				}
+				
+			}
+			else if (mx_p1 == -1 && !canStep(paddle1.getNextPos(deltaT, 0, 1).x, paddle1.getNextPos(deltaT, 0, 1).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, -1, -1).x, paddle1.getNextPos(deltaT, -1, -1).z)) {
+					paddle1.updatePaddle(deltaT, -1, -1);
+				}
+			}
+			else if (mx_p1 == -1 && !canStep(paddle1.getNextPos(deltaT, 0, -1).x, paddle1.getNextPos(deltaT, 0, -1).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, -1, 1).x, paddle1.getNextPos(deltaT, -1, 1).z)) {
+					paddle1.updatePaddle(deltaT, -1, 1);
+				}
+			}
+			else if (mz_p1 == 1 && !canStep(paddle1.getNextPos(deltaT, 1, 0).x, paddle1.getNextPos(deltaT, 1, 0).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, -1, 1).x, paddle1.getNextPos(deltaT, -1, 1).z)) {
+					paddle1.updatePaddle(deltaT, -1, 1);
+				}
+			}
+			else if (mz_p1 == 1 && !canStep(paddle1.getNextPos(deltaT, -1, 0).x, paddle1.getNextPos(deltaT, -1, 0).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, 1, 1).x, paddle1.getNextPos(deltaT, 1, 1).z)) {
+					paddle1.updatePaddle(deltaT, 1, 1);
+				}
+			}
+			else if (mz_p1 == -1 && !canStep(paddle1.getNextPos(deltaT, 1, 0).x, paddle1.getNextPos(deltaT, 1, 0).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, -1, -1).x, paddle1.getNextPos(deltaT, -1, -1).z)) {
+					paddle1.updatePaddle(deltaT, -1, -1);
+				}
+			}
+			else if (mz_p1 == -1 && !canStep(paddle1.getNextPos(deltaT, -1, 0).x, paddle1.getNextPos(deltaT, -1, 0).z)) {
+				if (canStep(paddle1.getNextPos(deltaT, 1, -1).x, paddle1.getNextPos(deltaT, 1, -1).z)) {
+					paddle1.updatePaddle(deltaT, 1, -1);
+				}
+			}
+		}
+		//Paddle2
 		if (canStep(paddle2.getNextPos(deltaT, mx_p2, mz_p2).x, paddle2.getNextPos(deltaT, mx_p2, mz_p2).z)) {
-			paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
+			paddle2.updatePaddle(deltaT, mx_p2, mz_p2);
+		}
+		else if (mx_p2 != 0 && canStep(paddle2.getNextPos(deltaT, mx_p2, 0).x, paddle2.getNextPos(deltaT, mx_p2, 0).z)) {
+			paddle2.updatePaddle(deltaT, mx_p2, 0);
+		}
+		else if (mz_p2 != 0 && canStep(paddle2.getNextPos(deltaT, 0, mz_p2).x, paddle2.getNextPos(deltaT, 0, mz_p2).z)) {
+			paddle2.updatePaddle(deltaT, 0, mz_p2);
+		}
+		else {
+
+			if (mx_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, 0, 1).x, paddle2.getNextPos(deltaT, 0, 1).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, 1, -1).x, paddle2.getNextPos(deltaT, 1, -1).z)) {
+					paddle2.updatePaddle(deltaT, 1, -1);
+				}
+			}
+			else if (mx_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, 0, -1).x, paddle2.getNextPos(deltaT, 0, -1).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, 1, 1).x, paddle2.getNextPos(deltaT, 1, 1).z)) {
+					paddle2.updatePaddle(deltaT, 1, 1);
+				}
+
+			}
+			else if (mx_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, 0, 1).x, paddle2.getNextPos(deltaT, 0, 1).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, -1, -1).x, paddle2.getNextPos(deltaT, -1, -1).z)) {
+					paddle2.updatePaddle(deltaT, -1, -1);
+				}
+			}
+			else if (mx_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, 0, -1).x, paddle2.getNextPos(deltaT, 0, -1).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, -1, 1).x, paddle2.getNextPos(deltaT, -1, 1).z)) {
+					paddle2.updatePaddle(deltaT, -1, 1);
+				}
+			}
+			else if (mz_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, 1, 0).x, paddle2.getNextPos(deltaT, 1, 0).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, -1, 1).x, paddle2.getNextPos(deltaT, -1, 1).z)) {
+					paddle2.updatePaddle(deltaT, -1, 1);
+				}
+			}
+			else if (mz_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, -1, 0).x, paddle2.getNextPos(deltaT, -1, 0).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, 1, 1).x, paddle2.getNextPos(deltaT, 1, 1).z)) {
+					paddle2.updatePaddle(deltaT, 1, 1);
+				}
+			}
+			else if (mz_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, 1, 0).x, paddle2.getNextPos(deltaT, 1, 0).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, -1, -1).x, paddle2.getNextPos(deltaT, -1, -1).z)) {
+					paddle2.updatePaddle(deltaT, -1, -1);
+				}
+			}
+			else if (mz_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, -1, 0).x, paddle2.getNextPos(deltaT, -1, 0).z)) {
+				if (canStep(paddle2.getNextPos(deltaT, 1, -1).x, paddle2.getNextPos(deltaT, 1, -1).z)) {
+					paddle2.updatePaddle(deltaT, 1, -1);
+				}
+			}
 		}
 
-
-
-		//Paddles update
-		/*
-		paddle1.updatePaddle1(deltaT,mx_p1,mz_p1);
-		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
-		*/
 		//Management of points translations
 		float deltaTransPoint = 0.22;
 		int moveRed1 = 0;
