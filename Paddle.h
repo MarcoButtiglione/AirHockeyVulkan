@@ -30,9 +30,9 @@ public:
 	
 	void updatespeed(int check,float T);
 
-	void updatePaddle1(float deltaT, float mx, float mz);
+	void updatePaddle(float deltaT, float mx, float mz);
 	
-	void updatePaddle2(float deltaT, float mx, float mz);
+	
 	
 
 
