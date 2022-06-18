@@ -22,6 +22,7 @@ public:
 	Paddle(glm::vec3 pos, float radDisk, float radPaddle, float widthTab, float lengthTab,float speedP);
 	
 	glm::vec3 getPos();
+	glm::vec3 getNextPos(float deltaT, float mx, float mz);
 	
 	void setPos(glm::vec3 pos);
 	

@@ -29,27 +29,39 @@ void Paddle::updatespeed(int check,float T) {
 }
 
 void Paddle::updatePaddle1(float deltaT, float mx, float mz) {
-
+	/*
 	if (posPaddle.x + radius + mx * deltaT / speed <= 0.0 &&
 		posPaddle.x - radius + mx * deltaT / speed >= -lengthT/2)
+		*/
+	if (posPaddle.x + radius + mx * deltaT / speed <= 0.0)
 		posPaddle.x += mx * deltaT / speed;
+	/*
 	if (posPaddle.z + radius - mz * deltaT / speed <= widthT/2 &&
 		posPaddle.z - radius - mz * deltaT / speed >= -widthT/2)
+		*/
 		posPaddle.z -= mz * deltaT / speed;
 }
 
 
 void Paddle::updatePaddle2(float deltaT, float mx, float mz) {
-	
+	/*
 	if (posPaddle.x - radius + mx * deltaT / speed >= 0.0 &&
 		posPaddle.x + radius + mx * deltaT / speed <= lengthT/2)
+	*/
+	if (posPaddle.x - radius + mx * deltaT / speed >= 0.0)
 		posPaddle.x += mx * deltaT / speed;
-
-	if (posPaddle.z + radius - mz * deltaT / speed <= widthT / 2 &&
-		posPaddle.z - radius - mz * deltaT / speed >= -widthT / 2) {
-		posPaddle.z -= mz * deltaT / speed;
-	}
+	/*
 	
+	if (posPaddle.z + radius - mz * deltaT / speed <= widthT / 2 &&
+		posPaddle.z - radius - mz * deltaT / speed >= -widthT / 2) 
+	*/
+		posPaddle.z -= mz * deltaT / speed;
+	
+	
+}
+glm::vec3 Paddle::getNextPos(float deltaT, float mx, float mz) {
+	glm::vec3 nextPosPaddle = glm::vec3(posPaddle.x + mx * deltaT / speed,0.0f, posPaddle.z - mz * deltaT / speed);
+	return nextPosPaddle;
 }
 
 void Paddle::setSpeed(float speedP) {

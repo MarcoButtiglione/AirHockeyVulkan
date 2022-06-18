@@ -109,6 +109,29 @@ class MyProject : public BaseProject {
 	glm::vec4 switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 	float radiusSpotLight = 40.0f;
 
+	int collisionMapWidth, collisionMapHeight;
+	stbi_uc* collisionMap;
+	
+	bool canStepPoint(float x, float y) {
+		int pixX = round((x + 1.893 / 2) * (collisionMapWidth / 1.893));
+		int pixY = round((y + 1.014 / 2) * (collisionMapHeight / 1.014));
+		int pix = (int)collisionMap[collisionMapWidth * pixY + pixX];
+		//std::cout << pixX << " " << pixY << " " << x << " " << y << " \t P = " << pix << "\n";		
+		return pix > 128;
+	}
+	const float checkRadius = radiusPaddle;
+	const int checkSteps = 100;
+	bool canStep(float x, float y) {
+		for (int i = 0; i < checkSteps; i++) {
+			if (!canStepPoint(x + cos(6.2832 * i / (float)checkSteps) * checkRadius,
+				y + sin(6.2832 * i / (float)checkSteps) * checkRadius)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
 
 	void setWindowParameters() {
 		// window size, titile and initial background
@@ -274,6 +297,16 @@ class MyProject : public BaseProject {
 			0.1f, 10.0f);
 		gubo.proj[1][1] *= -1;
 		gubo.switchLight = switchLight;
+
+		collisionMap = stbi_load("textures/collision_map.png", &collisionMapWidth, &collisionMapHeight, NULL, 1);
+		if (collisionMap) {
+			int pix = (int)collisionMap[collisionMapWidth * 0 + 0];
+
+			std::cout << "caricato"<< collisionMapWidth<<";"<< collisionMapHeight;
+		}
+		else {
+			std::cout << "non caricato";
+		}
 	}
 
 
@@ -890,11 +923,48 @@ class MyProject : public BaseProject {
 			goalRed();
 			break;
 		}
-
-		//Paddles update
-		paddle1.updatePaddle1(deltaT,mx_p1,mz_p1);
+		/*
+		glm::vec3 oldPos1 = paddle1.getPos();
+		glm::vec3 oldPos2 = paddle2.getPos();
+		paddle1.updatePaddle1(deltaT, mx_p1, mz_p1);
 		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
 
+
+		if (!canStep(paddle1.getPos().x, paddle1.getPos().z)) {
+
+			paddle1.setPos(oldPos1);
+		}
+		if (!canStep(paddle2.getPos().x, paddle2.getPos().z)) {
+			paddle2.setPos(oldPos2);
+		}
+		*/
+
+		if (canStep(paddle1.getNextPos(deltaT, mx_p1, mz_p1).x, paddle1.getNextPos(deltaT, mx_p1, mz_p1).z)) {
+			paddle1.updatePaddle1(deltaT, mx_p1, mz_p1);
+		}
+		
+		else if (canStep(paddle1.getNextPos(deltaT, mx_p1, 0).x, paddle1.getNextPos(deltaT, mx_p1, 0).z)) {
+			paddle1.updatePaddle1(deltaT, mx_p1, 0);
+		}
+		else if ( canStep(paddle1.getNextPos(deltaT, 0, mz_p1).x, paddle1.getNextPos(deltaT, 0, mz_p1).z)) {
+			paddle1.updatePaddle1(deltaT, 0, mz_p1);
+		}
+		
+		
+		
+		
+
+		if (canStep(paddle2.getNextPos(deltaT, mx_p2, mz_p2).x, paddle2.getNextPos(deltaT, mx_p2, mz_p2).z)) {
+			paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
+		}
+
+
+
+		//Paddles update
+		/*
+		paddle1.updatePaddle1(deltaT,mx_p1,mz_p1);
+		paddle2.updatePaddle2(deltaT, mx_p2, mz_p2);
+		*/
 		//Management of points translations
 		float deltaTransPoint = 0.22;
 		int moveRed1 = 0;
