@@ -790,16 +790,15 @@ class MyProject : public BaseProject {
 		}
 		//Decrease radius spot light
 		if (glfwGetKey(window, GLFW_KEY_O)) {
-			if (radiusSpotLight >= 10.0f){
+			if (radiusSpotLight >= 7.0f)
 				radiusSpotLight -= 20.0 * deltaT;
-				return;
-			}
 		}
 		//Increase radius spot light
 		if (glfwGetKey(window, GLFW_KEY_P)) {
+
 			if (radiusSpotLight <= 40.0f)
 				radiusSpotLight += 20.0 * deltaT;
-			return;
+			
 		}
 		//Start game
 		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
