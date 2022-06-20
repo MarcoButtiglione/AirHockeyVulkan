@@ -12,6 +12,9 @@ struct globalUniformBufferObject {
 	alignas(16) float gamma;
 	alignas(16) glm::vec4 switchLight;
 	alignas(16) glm::vec3 eyePos;
+	alignas(16) glm::vec2 paddle1Pos;
+	alignas(16) glm::vec2 paddle2Pos;
+	alignas(16) glm::vec2 diskPos;
 };
 
 struct UniformBufferObject {
@@ -1114,6 +1117,10 @@ class MyProject : public BaseProject {
 		);
 		gubo.switchLight = switchLight;
 		gubo.gamma = 50.0f;
+		gubo.paddle1Pos = glm::vec2(paddle1.getPos().x, paddle1.getPos().z);
+		gubo.paddle2Pos = glm::vec2(paddle2.getPos().x, paddle2.getPos().z);
+		gubo.diskPos = disk.getPos();
+
 
 
 		
