@@ -943,7 +943,7 @@ class MyProject : public BaseProject {
 			goalRed();
 			break;
 		}
-		float step=6;
+		float step=1;
 		//Paddle1
 		if (canStep(paddle1.getNextPos(deltaT, mx_p1, mz_p1).x, paddle1.getNextPos(deltaT, mx_p1, mz_p1).z)) {
 			paddle1.updatePaddle(deltaT, mx_p1, mz_p1);
