@@ -329,7 +329,8 @@ void main() {
 		(
 			Lspot1*(fDiffuse1+fSpecular1)*gubo.switchLight.x+
 			Lspot2*(fDiffuse2+fSpecular2)*gubo.switchLight.y+
-			Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z+Lamb
+			Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z+
+			Lamb
 		)*(1-gubo.switchMode)+
 		(
 			Lspot1_Blind*(fDiffuse1_Blind+fSpecular1_Blind)*gubo.switchLight.x+
