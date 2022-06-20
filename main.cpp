@@ -1011,44 +1011,44 @@ class MyProject : public BaseProject {
 		else {
 
 			if (mx_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, 0, 1).x, paddle2.getNextPos(deltaT, 0, 1).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, 1, -1).x, paddle2.getNextPos(deltaT, 1, -1).z)) {
-					paddle2.updatePaddle(deltaT, 1, -1);
+				if (canStep(paddle2.getNextPos(deltaT, step, -step).x, paddle2.getNextPos(deltaT, step, -step).z)) {
+					paddle2.updatePaddle(deltaT, step, -step);
 				}
 			}
 			else if (mx_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, 0, -1).x, paddle2.getNextPos(deltaT, 0, -1).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, 1, 1).x, paddle2.getNextPos(deltaT, 1, 1).z)) {
-					paddle2.updatePaddle(deltaT, 1, 1);
+				if (canStep(paddle2.getNextPos(deltaT, step, step).x, paddle2.getNextPos(deltaT, step, step).z)) {
+					paddle2.updatePaddle(deltaT, step, step);
 				}
 
 			}
 			else if (mx_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, 0, 1).x, paddle2.getNextPos(deltaT, 0, 1).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, -1, -1).x, paddle2.getNextPos(deltaT, -1, -1).z)) {
-					paddle2.updatePaddle(deltaT, -1, -1);
+				if (canStep(paddle2.getNextPos(deltaT, -step, -step).x, paddle2.getNextPos(deltaT, -step, -step).z)) {
+					paddle2.updatePaddle(deltaT, -step, -step);
 				}
 			}
 			else if (mx_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, 0, -1).x, paddle2.getNextPos(deltaT, 0, -1).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, -1, 1).x, paddle2.getNextPos(deltaT, -1, 1).z)) {
-					paddle2.updatePaddle(deltaT, -1, 1);
+				if (canStep(paddle2.getNextPos(deltaT, -step, step).x, paddle2.getNextPos(deltaT, -step, step).z)) {
+					paddle2.updatePaddle(deltaT, -step, step);
 				}
 			}
 			else if (mz_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, 1, 0).x, paddle2.getNextPos(deltaT, 1, 0).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, -1, 1).x, paddle2.getNextPos(deltaT, -1, 1).z)) {
-					paddle2.updatePaddle(deltaT, -1, 1);
+				if (canStep(paddle2.getNextPos(deltaT, -step, step).x, paddle2.getNextPos(deltaT, -step, step).z)) {
+					paddle2.updatePaddle(deltaT, -step, step);
 				}
 			}
 			else if (mz_p2 == 1 && !canStep(paddle2.getNextPos(deltaT, -1, 0).x, paddle2.getNextPos(deltaT, -1, 0).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, 1, 1).x, paddle2.getNextPos(deltaT, 1, 1).z)) {
-					paddle2.updatePaddle(deltaT, 1, 1);
+				if (canStep(paddle2.getNextPos(deltaT, step, step).x, paddle2.getNextPos(deltaT, step, step).z)) {
+					paddle2.updatePaddle(deltaT, step, step);
 				}
 			}
 			else if (mz_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, 1, 0).x, paddle2.getNextPos(deltaT, 1, 0).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, -1, -1).x, paddle2.getNextPos(deltaT, -1, -1).z)) {
-					paddle2.updatePaddle(deltaT, -1, -1);
+				if (canStep(paddle2.getNextPos(deltaT, -step, -step).x, paddle2.getNextPos(deltaT, -step, -step).z)) {
+					paddle2.updatePaddle(deltaT, -step, -step);
 				}
 			}
 			else if (mz_p2 == -1 && !canStep(paddle2.getNextPos(deltaT, -1, 0).x, paddle2.getNextPos(deltaT, -1, 0).z)) {
-				if (canStep(paddle2.getNextPos(deltaT, 1, -1).x, paddle2.getNextPos(deltaT, 1, -1).z)) {
-					paddle2.updatePaddle(deltaT, 1, -1);
+				if (canStep(paddle2.getNextPos(deltaT, step, -step).x, paddle2.getNextPos(deltaT, step, -step).z)) {
+					paddle2.updatePaddle(deltaT, step, -step);
 				}
 			}
 		}
