@@ -8,8 +8,12 @@ layout(set = 0, binding = 0) uniform globalUniformBufferObject {
 	vec3 lightColor;
 	vec4 lightParams;
 	float gamma;
+	float switchMode;
 	vec4 switchLight;
 	vec3 eyePos;
+	vec2 paddle1Pos;
+	vec2 paddle2Pos;
+	vec2 diskPos;
 } gubo;
 
 layout(set=1, binding = 1) uniform sampler2D texSampler;
@@ -224,8 +228,119 @@ void main() {
 		AmbCol
 	);
 
+	//Blind mode
+	//Spot light 1
+	vec3 Lspot1_Blind = spot_light_color(
+		gubo.lightColor*0.2f,
+		gubo.lightParams.w,
+		vec3(gubo.diskPos.x,gubo.lightPos.y,gubo.diskPos.y),
+		fragPos,
+		gubo.lightParams.z,
+		gubo.lightDir,
+		cos(0.122f),
+		gubo.lightParams.x
+	);
+	//Spot light 2
+	vec3 Lspot2_Blind = spot_light_color(
+		gubo.lightColor*0.2f,
+		gubo.lightParams.w,
+		vec3(gubo.paddle1Pos.x,gubo.lightPos.y,gubo.paddle1Pos.y),
+		fragPos,
+		gubo.lightParams.z,
+		gubo.lightDir,
+		cos(0.122f),
+		gubo.lightParams.x
+	);
+	//Spot light 3
+	vec3 Lspot3_Blind = spot_light_color(
+		gubo.lightColor*0.2f,
+		gubo.lightParams.w,
+		vec3(gubo.paddle2Pos.x,gubo.lightPos.y,gubo.paddle2Pos.y),
+		fragPos,
+		gubo.lightParams.z,
+		gubo.lightDir,
+		cos(0.122f),
+		gubo.lightParams.x
+	);
+
+	//Light direction
+	//Spot light 1
+	vec3 lx1_Blind = spot_light_dir(
+		vec3(gubo.diskPos.x,gubo.lightPos.y,gubo.diskPos.y),
+		fragPos
+	);
+	//Spot light 2
+	vec3 lx2_Blind = spot_light_dir(
+		vec3(gubo.paddle1Pos.x,gubo.lightPos.y,gubo.paddle1Pos.y),
+		fragPos
+	);
+	//Spot light 3
+	vec3 lx3_Blind = spot_light_dir(
+		vec3(gubo.paddle2Pos.x,gubo.lightPos.y,gubo.paddle2Pos.y),
+		fragPos
+	);
+
+
+	//BRDF functions
+
+	vec3 fDiffuse1_Blind = LambertReflection(
+		DifCol,
+		lx1_Blind,
+		Norm
+	);
+	vec3 fDiffuse2_Blind = LambertReflection(
+		DifCol,
+		lx2_Blind,
+		Norm
+	);
+	vec3 fDiffuse3_Blind = LambertReflection(
+		DifCol,
+		lx3_Blind,
+		Norm
+	);
+	
+	vec3 fSpecular1_Blind = PhongReflection(
+		SpecCol,
+		EyeDir,
+		lx1_Blind,
+		Norm,
+		gamma
+	);
+	vec3 fSpecular2_Blind = PhongReflection(
+		SpecCol,
+		EyeDir,
+		lx2_Blind,
+		Norm,
+		gamma
+	);
+	
+	vec3 fSpecular3_Blind = PhongReflection(
+		SpecCol,
+		EyeDir,
+		lx3_Blind,
+		Norm,
+		gamma
+	);
+
+
 	//Rendering equation
-	vec3 L = (Lspot1*(fDiffuse1+fSpecular1)*gubo.switchLight.x+Lspot2*(fDiffuse2+fSpecular2)*gubo.switchLight.y+Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z)+Lamb+(L_directional*(fDiffuse_Directional)*gubo.switchLight.w);
+	vec3 L = 
+	(
+		(
+			Lspot1*(fDiffuse1+fSpecular1)*gubo.switchLight.x+
+			Lspot2*(fDiffuse2+fSpecular2)*gubo.switchLight.y+
+			Lspot3*(fDiffuse3+fSpecular3)*gubo.switchLight.z+Lamb
+		)*(1-gubo.switchMode)+
+		(
+			Lspot1_Blind*(fDiffuse1_Blind+fSpecular1_Blind)*gubo.switchLight.x+
+			Lspot2_Blind*(fDiffuse2_Blind+fSpecular2_Blind)*gubo.switchLight.y+
+			Lspot3_Blind*(fDiffuse3_Blind+fSpecular3_Blind)*gubo.switchLight.z
+		)*gubo.switchMode+
+		(
+			L_directional*(fDiffuse_Directional)*gubo.switchLight.w
+		)
+	)
+	;
 
 
 	outColor = vec4(clamp(L,vec3(0.0f), vec3(1.0f)), 1.0f);	
