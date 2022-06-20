@@ -9,13 +9,12 @@ struct globalUniformBufferObject {
 	alignas(16) glm::vec3 lightPos;
 	alignas(16) glm::vec3 lightColor;
 	alignas(16) glm::vec4 lightParams;
-	alignas(16) float gamma;
-	alignas(16) float switchMode;
+	alignas(4) float gamma,switchMode;
 	alignas(16) glm::vec4 switchLight;
 	alignas(16) glm::vec3 eyePos;
-	alignas(16) glm::vec2 paddle1Pos;
-	alignas(16) glm::vec2 paddle2Pos;
-	alignas(16) glm::vec2 diskPos;
+	alignas(8) glm::vec2 paddle1Pos;
+	alignas(8) glm::vec2 paddle2Pos;
+	alignas(8) glm::vec2 diskPos;
 };
 
 struct UniformBufferObject {
@@ -112,7 +111,7 @@ class MyProject : public BaseProject {
 	//Initialization of spotlights
 	glm::vec4 switchLight = glm::vec4(0.0f, 0.0f, 0.0f,1.0f);
 	float radiusSpotLight = 40.0f;
-
+	
 	int collisionMapWidth, collisionMapHeight;
 	stbi_uc* collisionMap;
 	
@@ -295,7 +294,7 @@ class MyProject : public BaseProject {
 						{0, UNIFORM, sizeof(globalUniformBufferObject), nullptr},
 			});
 
-		gubo.switchMode = 0.0;
+		gubo.switchMode = 0.0f;
 		gubo.proj = glm::perspective(glm::radians(45.0f),
 			swapChainExtent.width / (float)swapChainExtent.height,
 			0.1f, 10.0f);
@@ -807,6 +806,7 @@ class MyProject : public BaseProject {
 
 			}
 		}
+		
 		//Decrease radius spot light
 		if (glfwGetKey(window, GLFW_KEY_O)) {
 			if (radiusSpotLight >= 7.0f)
